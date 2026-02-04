@@ -1,0 +1,190 @@
+[gd_scene format=4 uid="uid://bfah2f8lx467a"]
+
+[ext_resource type="Texture2D" uid="uid://cuytfhkj6klpe" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Badlands.png" id="1_2cqfq"]
+[ext_resource type="Script" uid="uid://brfif0wf7kwv8" path="res://tile_map_layer.gd" id="2_h2yge"]
+[ext_resource type="Texture2D" uid="uid://1n2iqk06ggmo" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Broken.png" id="2_yaehf"]
+[ext_resource type="Texture2D" uid="uid://25likc5bm8q" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Dead.png" id="3_074og"]
+[ext_resource type="Texture2D" uid="uid://nroc27m04tkv" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Desert.png" id="4_cegan"]
+[ext_resource type="Texture2D" uid="uid://ra0xv40hd3sa" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Evergreen.png" id="5_82xsv"]
+[ext_resource type="Texture2D" uid="uid://b6tu8hl01j52b" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Farmland.png" id="6_getpj"]
+[ext_resource type="Texture2D" uid="uid://sprdljfcbdv5" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Forest.png" id="7_ryguw"]
+[ext_resource type="Texture2D" uid="uid://bl6fodpd5yhqv" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Grassland.png" id="8_d13ii"]
+[ext_resource type="Texture2D" uid="uid://cvv1dxnfk4v1v" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Hills.png" id="9_1u8w0"]
+[ext_resource type="Texture2D" uid="uid://svfj6xfbndfn" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Jungle.png" id="10_0odxb"]
+[ext_resource type="Texture2D" uid="uid://ctqtxulkjdbwi" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Mountains.png" id="11_lswn8"]
+[ext_resource type="Texture2D" uid="uid://tslrlhoxwum7" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Ocean.png" id="12_a6jrf"]
+[ext_resource type="Texture2D" uid="uid://2b22kxfq700t" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Shallows.png" id="13_xuqvo"]
+[ext_resource type="Texture2D" uid="uid://desq2hpjac6g1" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Swamp.png" id="14_qsp4k"]
+[ext_resource type="Texture2D" uid="uid://bjtsce1sjqsgr" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Underdark.png" id="15_kq58d"]
+[ext_resource type="Texture2D" uid="uid://d66gmoo815c7" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Base.png" id="16_seu75"]
+[ext_resource type="Texture2D" uid="uid://ntbeu0dvkk3v" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/OSHD---Background-Musee.png" id="17_ryguw"]
+[ext_resource type="Texture2D" uid="uid://ca8sx2208nr0d" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/SPA.png" id="18_d13ii"]
+[ext_resource type="Texture2D" uid="uid://cjr7jgor32frd" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/Eglise.png" id="19_1u8w0"]
+[ext_resource type="Texture2D" uid="uid://6j0hm26kxub2" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/salleSport.png" id="20_0odxb"]
+[ext_resource type="Texture2D" uid="uid://bjf63kb7j6ue0" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/cimetiere.png" id="21_lswn8"]
+[ext_resource type="Texture2D" uid="uid://btdkcidfiicr7" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/hopital.png" id="22_a6jrf"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_htxhm"]
+texture = ExtResource("1_2cqfq")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Ecole"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jq2sk"]
+texture = ExtResource("2_yaehf")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Ecole"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4k2k6"]
+texture = ExtResource("3_074og")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0rl1p"]
+texture = ExtResource("4_cegan")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ok6jj"]
+texture = ExtResource("5_82xsv")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_facbu"]
+texture = ExtResource("6_getpj")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Maison de retraite"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b1qrp"]
+texture = ExtResource("7_ryguw")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Parc"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_come4"]
+texture = ExtResource("8_d13ii")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Bibliothèque"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_h8e4i"]
+texture = ExtResource("9_1u8w0")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4lmeg"]
+texture = ExtResource("10_0odxb")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Grotte"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0cp0l"]
+texture = ExtResource("11_lswn8")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Bibliothèque"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_d2t1y"]
+texture = ExtResource("12_a6jrf")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Hopital"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gngh3"]
+texture = ExtResource("13_xuqvo")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Musée"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0n3wm"]
+texture = ExtResource("14_qsp4k")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qnost"]
+texture = ExtResource("15_kq58d")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wnkbs"]
+texture = ExtResource("16_seu75")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Base"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xuqvo"]
+texture = ExtResource("17_ryguw")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Commisariat"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qsp4k"]
+texture = ExtResource("18_d13ii")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "SPA"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kq58d"]
+texture = ExtResource("19_1u8w0")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Eglise"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_seu75"]
+texture = ExtResource("20_0odxb")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Salle de sport"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_f6a44"]
+texture = ExtResource("21_lswn8")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Cimetiere"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0cbny"]
+texture = ExtResource("22_a6jrf")
+texture_region_size = Vector2i(210, 210)
+0:0/0 = 0
+0:0/0/custom_data_0 = "Hôpital"
+
+[sub_resource type="TileSet" id="TileSet_f6a44"]
+tile_shape = 3
+tile_size = Vector2i(210, 210)
+custom_data_layer_0/name = "nom_lieu"
+custom_data_layer_0/type = 4
+sources/15 = SubResource("TileSetAtlasSource_htxhm")
+sources/16 = SubResource("TileSetAtlasSource_jq2sk")
+sources/17 = SubResource("TileSetAtlasSource_4k2k6")
+sources/18 = SubResource("TileSetAtlasSource_0rl1p")
+sources/19 = SubResource("TileSetAtlasSource_ok6jj")
+sources/20 = SubResource("TileSetAtlasSource_facbu")
+sources/21 = SubResource("TileSetAtlasSource_b1qrp")
+sources/22 = SubResource("TileSetAtlasSource_come4")
+sources/23 = SubResource("TileSetAtlasSource_h8e4i")
+sources/24 = SubResource("TileSetAtlasSource_4lmeg")
+sources/25 = SubResource("TileSetAtlasSource_0cp0l")
+sources/26 = SubResource("TileSetAtlasSource_d2t1y")
+sources/27 = SubResource("TileSetAtlasSource_gngh3")
+sources/28 = SubResource("TileSetAtlasSource_0n3wm")
+sources/29 = SubResource("TileSetAtlasSource_qnost")
+sources/30 = SubResource("TileSetAtlasSource_wnkbs")
+sources/31 = SubResource("TileSetAtlasSource_xuqvo")
+sources/32 = SubResource("TileSetAtlasSource_qsp4k")
+sources/33 = SubResource("TileSetAtlasSource_kq58d")
+sources/34 = SubResource("TileSetAtlasSource_seu75")
+sources/35 = SubResource("TileSetAtlasSource_f6a44")
+sources/36 = SubResource("TileSetAtlasSource_0cbny")
+
+[node name="Main" type="Node2D" unique_id=851540061]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1726121890]
+tile_map_data = PackedByteArray("AAAAAAAAEQAAAAAAAAABAAAAEQAAAAAAAAAAAAEAEQAAAAAAAAAAAAIAEQAAAAAAAAAAAAMAEQAAAAAAAAABAAMAEQAAAAAAAAABAAIAEQAAAAAAAAACAAIAEQAAAAAAAAABAAEAHgAAAAAAAAACAAEAEQAAAAAAAAACAAAAEQAAAAAAAAACAAMAFAAAAAAAAAADAAIAEQAAAAAAAAADAAEAGwAAAAAAAAAEAAAAEQAAAAAAAAAEAAIAEQAAAAAAAAADAAMAEQAAAAAAAAAEAAQAEQAAAAAAAAADAAUAEQAAAAAAAAADAAYAEQAAAAAAAAABAAQAEQAAAAAAAAAAAAQAEQAAAAAAAAD//wQAEQAAAAAAAAD+/wUAIwAAAAAAAAD9/wUAEQAAAAAAAAD//wMAEQAAAAAAAAD//wIAEQAAAAAAAAD+/wMAEQAAAAAAAAD+/wIAEQAAAAAAAAD+/wEAEQAAAAAAAAD//wEAEQAAAAAAAAD//wAAFQAAAAAAAAD8//7/EQAAAAAAAAD8////EQAAAAAAAAD8/wAAEQAAAAAAAAD8/wEAEQAAAAAAAAD8/wIAEQAAAAAAAAD8/wMAEQAAAAAAAAD8/wQAHQAAAAAAAAD8/wUAEQAAAAAAAAD8/wYAHQAAAAAAAAD9//7/EQAAAAAAAAD9////EQAAAAAAAAD9/wAAEQAAAAAAAAD9/wEAEQAAAAAAAAD9/wIAEQAAAAAAAAD9/wMADwAAAAAAAAD9/wQAEQAAAAAAAAD9/wYAHQAAAAAAAAD+//7/IAAAAAAAAAD+////EQAAAAAAAAD+/wAAEQAAAAAAAAD+/wQAEQAAAAAAAAD+/wYAEQAAAAAAAAD///7/EQAAAAAAAAD/////EQAAAAAAAAD//wUAEQAAAAAAAAD//wYAEQAAAAAAAAAAAP7/EQAAAAAAAAAAAP//EQAAAAAAAAAAAAUAGQAAAAAAAAAAAAYAEQAAAAAAAAABAP7/EQAAAAAAAAABAP//EQAAAAAAAAABAAUAEQAAAAAAAAABAAYAEQAAAAAAAAACAP7/EQAAAAAAAAACAP//EQAAAAAAAAACAAQAEQAAAAAAAAACAAUAEQAAAAAAAAACAAYAIgAAAAAAAAADAP7/EQAAAAAAAAADAP//GgAAAAAAAAADAAAAEQAAAAAAAAADAAQAEQAAAAAAAAAEAP7/EQAAAAAAAAAEAP//EQAAAAAAAAAEAAEAEQAAAAAAAAAEAAMAEQAAAAAAAAAEAAUAEQAAAAAAAAAEAAYAEQAAAAAAAAAFAP7/EQAAAAAAAAAFAP//EQAAAAAAAAAFAAAAEQAAAAAAAAAFAAEAEQAAAAAAAAAFAAIAEQAAAAAAAAAFAAMAEQAAAAAAAAAFAAQAGAAAAAAAAAAFAAUAEQAAAAAAAAAFAAYAEQAAAAAAAAD7/wUAHQAAAAAAAAD7/wQAHQAAAAAAAAD7/wMAHQAAAAAAAAD7/wIAHQAAAAAAAAD7/wEAHQAAAAAAAAD7/wAAHQAAAAAAAAD7////HQAAAAAAAAD7//7/HQAAAAAAAAD7//3/HQAAAAAAAAD8//3/HQAAAAAAAAD8/wcAHQAAAAAAAAD9/wcAHQAAAAAAAAD+/wcAHQAAAAAAAAD//wgAHQAAAAAAAAAAAAgAHQAAAAAAAAABAAgAHQAAAAAAAAACAAgAHQAAAAAAAAADAAgAHQAAAAAAAAAEAAgAHQAAAAAAAAAFAAgAHQAAAAAAAAAFAAcAHQAAAAAAAAAGAAYAHQAAAAAAAAAGAAUAHQAAAAAAAAAHAAQAHQAAAAAAAAAHAAMAHQAAAAAAAAAIAAIAHQAAAAAAAAAHAAEAHQAAAAAAAAAIAAAAHQAAAAAAAAAHAP//HQAAAAAAAAAIAP7/HQAAAAAAAAAHAP3/HQAAAAAAAAAGAP3/HQAAAAAAAAAGAPz/HQAAAAAAAAAFAPz/HQAAAAAAAAAEAPv/HQAAAAAAAAAEAPz/HQAAAAAAAAADAPv/HQAAAAAAAAACAPv/HQAAAAAAAAACAPz/HQAAAAAAAAABAPz/HQAAAAAAAAAAAPz/HQAAAAAAAAD///z/HQAAAAAAAAD+//z/HQAAAAAAAAD9//z/HQAAAAAAAAD9//3/EQAAAAAAAAD+//3/EQAAAAAAAAD///3/EQAAAAAAAAAAAP3/EQAAAAAAAAABAP3/EQAAAAAAAAACAP3/EQAAAAAAAAADAPz/IQAAAAAAAAADAP3/EQAAAAAAAAAEAP3/EQAAAAAAAAAFAP3/EQAAAAAAAAAGAP7/EQAAAAAAAAAHAP7/EQAAAAAAAAAGAP//EQAAAAAAAAAGAAAAHwAAAAAAAAAHAAAAEQAAAAAAAAAGAAEAEQAAAAAAAAAGAAIAEQAAAAAAAAAHAAIAEQAAAAAAAAAGAAMAEQAAAAAAAAAGAAQAEQAAAAAAAAD//wcAEQAAAAAAAAAAAAcAEQAAAAAAAAABAAcAEQAAAAAAAAACAAcAEQAAAAAAAAADAAcAEQAAAAAAAAAEAAcAEQAAAAAAAAA=")
+tile_set = SubResource("TileSet_f6a44")
+script = ExtResource("2_h2yge")
+
+[node name="Camera2D" type="Camera2D" parent="TileMapLayer" unique_id=1822370931]
+position = Vector2(368, 327)
+zoom = Vector2(0.3, 0.3)
