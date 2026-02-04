@@ -22,11 +22,11 @@ position = Vector2(468, 202)
 
 [node name="UI" type="Control" parent="Main/CanvasLayer" parent_id_path=PackedInt32Array(851540061, 471304397) index="1" unique_id=1469089895]
 layout_mode = 3
-anchors_preset = 0
-offset_left = 750.0
-offset_top = 7.0
-offset_right = 790.0
-offset_bottom = 47.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("9_l0jpj")
 
 [node name="TimeLabel" type="Label" parent="Main/CanvasLayer/UI" unique_id=1857943587]
@@ -38,9 +38,13 @@ offset_bottom = 83.0
 text = "Mission à accomplir"
 
 [node name="MissionPanel" type="PanelContainer" parent="Main/CanvasLayer/UI" unique_id=768350178]
-layout_mode = 0
-offset_right = 300.0
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
 offset_bottom = 354.0
+grow_horizontal = 0
 
 [node name="MissionBox" type="VBoxContainer" parent="Main/CanvasLayer/UI/MissionPanel" unique_id=1528492359]
 layout_mode = 2
