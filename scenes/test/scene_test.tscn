@@ -7,9 +7,15 @@
 [ext_resource type="Texture2D" uid="uid://blfo53s2sxkod" path="res://assets/ui/cards/julien.png" id="5_l0jpj"]
 [ext_resource type="Texture2D" uid="uid://b7lux567d2t7k" path="res://assets/ui/cards/clovis.png" id="6_y0upk"]
 [ext_resource type="Texture2D" uid="uid://ucy2pesihgyx" path="res://assets/ui/cards/karine.png" id="7_iq4jt"]
+[ext_resource type="PackedScene" uid="uid://bdm2pc1kcoqk3" path="res://scenes/map/main.tscn" id="8_dabsh"]
 
-[node name="Scene" type="Node2D" unique_id=53717244]
+[node name="Scene" type="Node2D" unique_id=53717244 node_paths=PackedStringArray("tile_map")]
 script = ExtResource("1_oqoec")
+tile_map = NodePath("Main/TileMapLayer")
+
+[node name="Main" parent="." unique_id=851540061 instance=ExtResource("8_dabsh")]
+z_index = -1
+position = Vector2(468, 202)
 
 [node name="Lilou" parent="." unique_id=1939404819 instance=ExtResource("1_dplmw")]
 position = Vector2(185, 390)
@@ -113,3 +119,5 @@ offset_right = 103.0
 offset_bottom = 33.0
 grow_horizontal = 2
 text = "Cliquez sur un personnage"
+
+[editable path="Main"]
