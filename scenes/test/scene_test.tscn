@@ -3,8 +3,11 @@
 [ext_resource type="PackedScene" uid="uid://c6amc01xkkysk" path="res://scenes/characters/character.tscn" id="1_dplmw"]
 [ext_resource type="Script" uid="uid://dq7bnj1eg7kda" path="res://scripts/test/scene_test.gd" id="1_oqoec"]
 [ext_resource type="Texture2D" uid="uid://df6uh5yxychsn" path="res://assets/ui/cards/lilou.png" id="3_1k3ka"]
+[ext_resource type="Script" uid="uid://cqwdswv3adqsa" path="res://scripts/ui/ui_mission.gd" id="3_iq4jt"]
 [ext_resource type="Texture2D" uid="uid://dujibpi4td67q" path="res://assets/ui/cards/titouan.png" id="4_dabsh"]
+[ext_resource type="Script" uid="uid://ug4plqb2at08" path="res://scripts/managers/MissionManager.gd" id="4_pdn7u"]
 [ext_resource type="Texture2D" uid="uid://blfo53s2sxkod" path="res://assets/ui/cards/julien.png" id="5_l0jpj"]
+[ext_resource type="Script" uid="uid://bl2k6uhicbjd3" path="res://scripts/managers/TimeManager.gd" id="5_t8n8j"]
 [ext_resource type="Texture2D" uid="uid://b7lux567d2t7k" path="res://assets/ui/cards/clovis.png" id="6_y0upk"]
 [ext_resource type="Texture2D" uid="uid://ucy2pesihgyx" path="res://assets/ui/cards/karine.png" id="7_iq4jt"]
 [ext_resource type="PackedScene" uid="uid://bdm2pc1kcoqk3" path="res://scenes/map/map.tscn" id="8_dabsh"]
@@ -22,6 +25,57 @@ scale = Vector2(1, 1)
 
 [node name="Camera2D" parent="Main/TileMapLayer" index="0" unique_id=1822370931]
 zoom = Vector2(0.3, 0.3)
+
+[node name="UI_mission" type="Control" parent="Main/CanvasLayer" parent_id_path=PackedInt32Array(851540061, 471304397) index="1" unique_id=1095418352]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_iq4jt")
+
+[node name="MissionPanel" type="PanelContainer" parent="Main/CanvasLayer/UI_mission" unique_id=266338806]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 54.0
+grow_horizontal = 0
+
+[node name="MissionBox" type="VBoxContainer" parent="Main/CanvasLayer/UI_mission/MissionPanel" unique_id=1081277554]
+layout_mode = 2
+
+[node name="MissionTitle" type="Label" parent="Main/CanvasLayer/UI_mission/MissionPanel/MissionBox" unique_id=389922023]
+layout_mode = 2
+text = "Mission à accomplir"
+
+[node name="MissionList" type="ItemList" parent="Main/CanvasLayer/UI_mission/MissionPanel/MissionBox" unique_id=1054851912]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MissionHint" type="Label" parent="Main/CanvasLayer/UI_mission/MissionPanel/MissionBox" unique_id=1079042094]
+layout_mode = 2
+
+[node name="TimeLabel" type="Label" parent="Main/CanvasLayer/UI_mission" unique_id=436547756]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 50.0
+offset_top = 26.5
+offset_right = 128.0
+offset_bottom = 49.5
+grow_vertical = 2
+text = "Jour 1 - 0h"
+
+[node name="MissionManager" type="Node" parent="Main" unique_id=797428804]
+script = ExtResource("4_pdn7u")
+
+[node name="TimeManager" type="Node" parent="Main" unique_id=1575785392]
+script = ExtResource("5_t8n8j")
 
 [node name="Lilou" parent="." unique_id=1939404819 instance=ExtResource("1_dplmw")]
 position = Vector2(185, 390)

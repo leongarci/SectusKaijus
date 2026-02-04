@@ -51,7 +51,7 @@ func _ready():
 
 	if has_node("UI/BoutonAvancer"): 
 		$UI/BoutonAvancer.pressed.connect(_on_bouton_avancer_pressed)
-	label_info.text = "Journée commencée. Il est 0h."
+	label_info.text = "Journée commencée."
 	
 	await get_tree().process_frame
 	for p in personnages:
@@ -191,7 +191,8 @@ func _unhandled_input(event):
 
 func _on_bouton_avancer_pressed():
 	heure_actuelle += 1
-	label_info.text = "Heure : " + str(heure_actuelle) + "h."
+	label_info.text = "Selectionnez un membre pour le faire avancer"
+	$Main/TimeManager.advance_hour()
 	chemin_visuel_actuel.clear()
 	queue_redraw()
 	personnage_selectionne = null
