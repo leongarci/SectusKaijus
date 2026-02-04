@@ -1,45 +1,38 @@
 extends Node2D
 
-# Déclarer un signal qui permet de dire si le mouvement est terminé
 signal mouvement_termine(perso_nom, nouvelle_coord)
-
-# Signal pour voir si le perso est sélectionné
 signal selection(mon_instance)
 
-# Propriétés de base du personnage
 @export var nom_personnage: String = "Personnage"
 @export var couleur_point: Color = Color.WHITE
+@export var vitesse: int = 1
 @export var est_occupe: bool = false
 @export var coord_actuelle: Vector2i = Vector2i(0, 0)
 @export var texture_carte : Texture2D
 
-# Variables de planification
-var destination_prevue_grille: Vector2i = Vector2i(0, 0)
-var prochaine_position_pixels: Vector2 # <-- NOUVEAU : On retient où on doit aller en pixels
+# --- NOUVEAU : Gestion du chemin long ---
+# Liste des prochaines cases à atteindre (le chemin complet restant)
+var chemin_a_parcourir: Array[Vector2i] = [] 
+var destination_finale_visuelle: Vector2 
+
+# Variables d'état
 var mouvement_en_attente: bool = false
-var position_logique_grille : Vector2i
 
 @export var competences = {
 	"essence": 0.0, "ecaille": 0.0, "kidnapping": 0.0, "creuser": 0.0, "saule": 0.0
 }
 
 func _ready():
-	# Initialisation visuelle
 	$ColorRect.color = couleur_point
 	$ColorRect.size = Vector2(50, 50)
-	$ColorRect.position = Vector2(-15, -15)
+	$ColorRect.position = Vector2(-25, -25)
 	$ColorRect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	if has_node("Area2D"):
 		$Area2D.input_event.connect(_on_area_2d_input_event)
 
-# Appelée par scene_test au démarrage pour caler le perso
 func initialiser_position(case_grille: Vector2i, position_monde: Vector2):
 	coord_actuelle = case_grille
-	destination_prevue_grille = case_grille
-	prochaine_position_pixels = position_monde # On initialise la destination sur soi-même
-	
-	# Ici, on téléporte immédiatement car c'est le setup du début
 	global_position = position_monde
 	print(nom_personnage + " initialisé en case " + str(case_grille))
 
@@ -47,29 +40,43 @@ func _on_area_2d_input_event(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		selection.emit(self)
 
-# Clic sur la map = On PRÉPARE le mouvement, on ne bouge pas encore
-func programmer_deplacement(nouvelle_case_grille: Vector2i, nouvelle_pos_monde: Vector2):
-	destination_prevue_grille = nouvelle_case_grille
-	prochaine_position_pixels = nouvelle_pos_monde # On retient la destination pixel pour plus tard
+# --- NOUVELLE LOGIQUE DE PROGRAMMATION ---
+# On reçoit maintenant un CHEMIN (liste de cases) et non plus juste une case
+func programmer_itineraire(chemin: Array[Vector2i], pos_finale_monde: Vector2):
+	chemin_a_parcourir = chemin
+	destination_finale_visuelle = pos_finale_monde
 	mouvement_en_attente = true
 	
-	# On met à jour la logique "virtuelle" tout de suite si besoin (pour empêcher d'autres actions)
-	position_logique_grille = nouvelle_case_grille
-	
-	print(nom_personnage + " a prévu d'aller en " + str(nouvelle_case_grille) + " (Attente validation)")
+	# La destination prévue pour CE tour dépend de la vitesse
+	# Mais la vraie finalité est stockée dans chemin_a_parcourir
+	print(nom_personnage + " a programmé un itinéraire de " + str(chemin.size()) + " étapes.")
 
-# Appui sur le bouton AVANCER = On BOUGE vraiment
 func avancer():
-	if mouvement_en_attente:
-		# 1. Validation logique
-		coord_actuelle = destination_prevue_grille
+	# Si on a un chemin à parcourir
+	if chemin_a_parcourir.size() > 0:
 		
-		# 2. Validation Visuelle (C'est ici qu'on se téléporte maintenant)
-		global_position = prochaine_position_pixels
+		# 1. On détermine combien de pas on fait ce tour-ci
+		# On prend le minimum entre la vitesse et ce qu'il reste à parcourir
+		var pas_ce_tour = min(vitesse, chemin_a_parcourir.size())
 		
-		mouvement_en_attente = false
+		# 2. On avance virtuellement dans la liste
+		var nouvelle_case : Vector2i
+		
+		# On "consomme" les étapes du chemin
+		for i in range(pas_ce_tour):
+			nouvelle_case = chemin_a_parcourir.pop_front() # Enlève la 1ère case et la renvoie
+		
+		# 3. Mise à jour officielle
+		coord_actuelle = nouvelle_case
+		
+		# NOTE : Le déplacement visuel (Tween) sera géré par SceneTest (reorganiser_positions)
+		# ou tu peux faire un tween ici vers la position monde de 'nouvelle_case'
+		
+		print(nom_personnage + " avance de " + str(pas_ce_tour) + " cases. Reste : " + str(chemin_a_parcourir.size()))
 		mouvement_termine.emit(nom_personnage, coord_actuelle)
-		print(nom_personnage, " se déplace et arrive en ", coord_actuelle)
+		
+	else:
+		print(nom_personnage + " n'a pas de chemin ou est arrivé.")
 
 func calculer_succes(type_mission: String, proba_base: float) -> float:
 	var bonus = competences.get(type_mission, 0.0)

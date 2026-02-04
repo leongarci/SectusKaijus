@@ -39,7 +39,7 @@ competences = {
 [node name="Titouan" parent="." unique_id=486234259 instance=ExtResource("1_dplmw")]
 position = Vector2(394, 127)
 nom_personnage = "Titouan"
-couleur_point = Color(1, 0.22626406, 0.1713596, 1)
+couleur_point = Color(0.38905436, 0.711722, 0.17854968, 1)
 texture_carte = ExtResource("4_dabsh")
 competences = {
 "creuser": -0.5,
@@ -52,7 +52,7 @@ competences = {
 [node name="Julien" parent="." unique_id=729635431 instance=ExtResource("1_dplmw")]
 position = Vector2(469, 341)
 nom_personnage = "Julien"
-couleur_point = Color(0.05882353, 0.7647059, 0.18431373, 1)
+couleur_point = Color(0.9998531, 0.23623207, 0.20981333, 1)
 texture_carte = ExtResource("5_l0jpj")
 competences = {
 "creuser": 0.6,
@@ -65,7 +65,7 @@ competences = {
 [node name="Clovis" parent="." unique_id=1263511504 instance=ExtResource("1_dplmw")]
 position = Vector2(266, 216)
 nom_personnage = "Clovis"
-couleur_point = Color(0, 0.11764706, 0.23137255, 1)
+couleur_point = Color(0.30544624, 0.3054462, 0.3054462, 1)
 texture_carte = ExtResource("6_y0upk")
 competences = {
 "creuser": 0.0,
@@ -78,7 +78,7 @@ competences = {
 [node name="Karine" parent="." unique_id=869408777 instance=ExtResource("1_dplmw")]
 position = Vector2(709, 170)
 nom_personnage = "Karine"
-couleur_point = Color(0.788105, 0.30083638, 0.9873108, 1)
+couleur_point = Color(0.87058824, 0.7019608, 0, 1)
 texture_carte = ExtResource("7_iq4jt")
 competences = {
 "creuser": 0.0,
