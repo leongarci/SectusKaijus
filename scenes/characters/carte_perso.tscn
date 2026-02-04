@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://dep3418d8p7rk"]
+
+[ext_resource type="Script" uid="uid://b2eplqevijuw8" path="res://scripts/characters/CartePerso.gd" id="1_rq8nm"]
+
+[node name="CartePerso" type="Button" unique_id=1254221645]
+offset_right = 8.0
+offset_bottom = 8.0
+size_flags_horizontal = 3
+script = ExtResource("1_rq8nm")
