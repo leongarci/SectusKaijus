@@ -10,6 +10,7 @@ signal selection(mon_instance)
 @export var couleur_point: Color = Color.WHITE
 @export var est_occupe: bool = false # Si vrai, il ne peut pas faire d'autre mission
 @export var coord_actuelle: Vector2i = Vector2i(0, 0) # Position réelle
+@export var texture_carte : Texture2D
 
 # Variables de planification
 var destination_prevue: Vector2i = Vector2i(0, 0)

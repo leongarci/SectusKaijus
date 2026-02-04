@@ -10,6 +10,32 @@ func setup(perso_a_lier):
 	# Affiche le nom sur le bouton
 	text = perso_a_lier.nom_personnage
 	
+	if perso_a_lier.texture_carte != null:
+		# Oui ! On l'affiche
+		icon = perso_a_lier.texture_carte
+		
+		# --- Réglages pour que l'image rentre bien dans le bouton ---
+		expand_icon = true      # Autorise l'image à être redimensionnée
+		ignore_texture_size = true # Force l'image à prendre la taille du bouton
+		
+		# Centrer l'image
+		icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
+		
+		# On cache le texte si tu veux juste voir l'image
+		text = "" 
+		
+		# On garde une couleur blanche neutre pour bien voir l'image
+		self.modulate = Color(1, 1, 1, 1)
+		
+	else:
+		# 2. PAS D'IMAGE ? (Sécurité)
+		# On garde l'ancien système avec le nom et la couleur
+		text = perso_a_lier.nom_personnage
+		var style = StyleBoxFlat.new()
+		style.bg_color = perso_a_lier.couleur_point
+		add_theme_stylebox_override("normal", style)
+	
 	# --- STYLE NORMAL ---
 	var style_normal = StyleBoxFlat.new()
 	style_normal.bg_color = perso_a_lier.couleur_point
@@ -31,14 +57,12 @@ func setup(perso_a_lier):
 	add_theme_stylebox_override("pressed", style_pressed)
 
 func _pressed():
-	# Quand on clique le bouton, on dit au jeu : "Sélectionne ce perso !"
 	carte_cliquee.emit(perso_reference)
 
 func mettre_a_jour_visuel(a_un_ordre: bool):
 	if a_un_ordre:
-		# On "grise" et on assombrit pour montrer que c'est fait
-		# On ne change PAS le texte pour éviter que le bouton change de taille
-		modulate = Color(0.5, 0.5, 0.5, 0.7)
+		# On assombrit l'image (gris foncé) pour dire "C'est fait"
+		modulate = Color(0.4, 0.4, 0.4, 1) 
 	else:
-		# On remet à la normale (Blanc éclatant = couleur d'origine)
+		# On remet l'image en pleine lumière
 		modulate = Color(1, 1, 1, 1)
