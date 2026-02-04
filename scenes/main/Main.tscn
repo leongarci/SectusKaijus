@@ -1,14 +1,18 @@
 [gd_scene format=3 uid="uid://dcpv873pqmdhg"]
 
 [ext_resource type="Script" uid="uid://dq5n7bwg41hru" path="res://scripts/main/Main.gd" id="1_nha0i"]
+[ext_resource type="Script" uid="uid://ug4plqb2at08" path="res://scripts/managers/MissionManager.gd" id="2_gyg6b"]
 [ext_resource type="Script" uid="uid://qpqhxwq4mdii" path="res://scripts/ui/UI.gd" id="2_q24mn"]
+[ext_resource type="Script" uid="uid://bl2k6uhicbjd3" path="res://scripts/managers/TimeManager.gd" id="3_dc040"]
 
 [node name="Main" type="Node2D" unique_id=2036217395]
 script = ExtResource("1_nha0i")
 
 [node name="MissionManager" type="Node" parent="." unique_id=613164737]
+script = ExtResource("2_gyg6b")
 
 [node name="TimeManager" type="Node" parent="." unique_id=2089332324]
+script = ExtResource("3_dc040")
 
 [node name="UI" type="Control" parent="." unique_id=1527947728]
 layout_mode = 3
@@ -21,11 +25,13 @@ script = ExtResource("2_q24mn")
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
+text = "Mission à accomplir"
 
 [node name="NextHourButton" type="Button" parent="UI" unique_id=1276337856]
 layout_mode = 0
 offset_right = 8.0
 offset_bottom = 8.0
+text = "Passer au prochain jour"
 
 [node name="MissionPanel" type="PanelContainer" parent="UI" unique_id=1819037249]
 layout_mode = 0
