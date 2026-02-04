@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://ccshggkc41rsa"]
+
+[ext_resource type="Script" uid="uid://cx3ecidon4asp" path="res://scenes/ui/ecran_titre.gd" id="1_58iws"]
+
+[node name="EcranTitre" type="Control" unique_id=372636072]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_58iws")
+
+[node name="Fond" type="TextureRect" parent="." unique_id=691549639]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+stretch_mode = 6
+
+[node name="Titre" type="Label" parent="." unique_id=1403931192]
+layout_mode = 0
+offset_left = 412.0
+offset_top = 307.0
+offset_right = 782.0
+offset_bottom = 330.0
+text = "Sectus Kaijus"
+horizontal_alignment = 1
+
+[node name="BoutonJouer" type="Button" parent="." unique_id=1791874530]
+layout_mode = 0
+offset_left = 412.0
+offset_top = 321.0
+offset_right = 782.0
+offset_bottom = 329.0
