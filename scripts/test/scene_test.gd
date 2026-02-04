@@ -4,44 +4,40 @@ var personnage_selectionne = null
 var heure_actuelle : int = 0
 var scene_carte = preload("res://scenes/characters/carte_perso.tscn")
 
+# Glisse ta TileMapLayer ici dans l'inspecteur !
 @export var tile_map : TileMapLayer 
 @onready var label_info = $UI/MessageInfo 
 @onready var deck_container = $UI/DeckContainer
 
 var personnages = []
 
-# --- A-STAR (PATHFINDING) ---
+# --- A-STAR ---
 var astar = AStar2D.new()
-# Dictionnaire pour convertir "Coordonnée Hex" <-> "ID unique entier" (nécessaire pour AStar)
 var map_coords_to_id = {} 
 var id_counter = 0
-
-# Pour le dessin du chemin
 var chemin_visuel_actuel : PackedVector2Array = []
 
 func _ready():
 	if tile_map == null:
 		push_error("ERREUR : Tile Map non assignée !")
 		return
-	z_index = 10 
-
-	# 1. INITIALISER LE GRAPH A*
+	
 	construire_graphe_astar()
-
-	# 2. INITIALISATION PERSONNAGES
+	
 	var noms_puants = ["Clovis", "Lilou", "Titouan", "Julien", "Karine"]
 	for nom in noms_puants:
 		if has_node(nom):
 			var p = get_node(nom)
 			personnages.append(p)
 			
+			# Initialisation position
 			var local_pos = tile_map.to_local(p.global_position)
 			var case_depart = tile_map.local_to_map(local_pos)
 			var centre_hex = tile_map.to_global(tile_map.map_to_local(case_depart))
 			
 			p.initialiser_position(case_depart, centre_hex)
 			
-			if p.has_signal("selection"):
+			if not p.is_connected("selection", _on_selection_demandee):
 				p.selection.connect(_on_selection_demandee)
 			
 			var nouvelle_carte = scene_carte.instantiate()
@@ -51,63 +47,43 @@ func _ready():
 
 	if has_node("UI/BoutonAvancer"): 
 		$UI/BoutonAvancer.pressed.connect(_on_bouton_avancer_pressed)
+	
 	label_info.text = "Journée commencée."
 	
 	await get_tree().process_frame
 	for p in personnages:
 		reorganiser_positions_sur_case(p.coord_actuelle)
 
-
-# --- CONSTRUCTION DU GRAPHE DE CHEMIN ---
 func construire_graphe_astar():
 	astar.clear()
 	map_coords_to_id.clear()
 	id_counter = 0
-	
-	# A. On récupère TOUTES les cases utilisées dans la map
 	var used_cells = tile_map.get_used_cells()
 	
-	# B. On ajoute les points au graphe
 	for cell in used_cells:
-		# On ne prend que les cases "sol" (id != -1 est déjà garanti par get_used_cells, 
-		# mais si tu as des murs avec un autre ID, filtre-les ici)
-		
-		# On crée un ID unique pour cette coordonnée
 		var id = id_counter
 		map_coords_to_id[cell] = id
 		id_counter += 1
-		
-		# On ajoute le point à AStar (ID, Position Monde pour l'heuristique de distance)
 		var pos_monde = tile_map.map_to_local(cell)
 		astar.add_point(id, pos_monde)
 	
-	# C. On connecte les voisins
 	for cell in used_cells:
 		var id_actuel = map_coords_to_id[cell]
 		var voisins = tile_map.get_surrounding_cells(cell)
-		
 		for voisin in voisins:
-			# Si le voisin existe dans notre graphe (donc c'est une case valide)
 			if map_coords_to_id.has(voisin):
 				var id_voisin = map_coords_to_id[voisin]
-				# On connecte (bidirectionnel par défaut)
 				if not astar.are_points_connected(id_actuel, id_voisin):
 					astar.connect_points(id_actuel, id_voisin)
-	
 	print("Graphe A* construit avec ", id_counter, " points.")
 
-
-# --- DESSIN (DEBUG + CHEMIN) ---
 func _draw():
 	if personnage_selectionne != null:
-		# Case actuelle
 		var centre = tile_map.to_global(tile_map.map_to_local(personnage_selectionne.coord_actuelle))
 		dessiner_hexagone(centre, Color(0, 0.2, 1, 0.5))
 		
-		# DESSIN DU CHEMIN PRÉVU (Ligne blanche)
 		if chemin_visuel_actuel.size() > 1:
 			draw_polyline(chemin_visuel_actuel, Color(1, 1, 1, 0.8), 3.0)
-			# Petit point rouge à la fin
 			draw_circle(chemin_visuel_actuel[-1], 5.0, Color(1, 0, 0))
 
 func dessiner_hexagone(centre: Vector2, couleur: Color):
@@ -124,94 +100,93 @@ func dessiner_hexagone(centre: Vector2, couleur: Color):
 
 func _on_selection_demandee(le_perso):
 	personnage_selectionne = le_perso
-	chemin_visuel_actuel.clear() # On efface l'ancien tracé
+	chemin_visuel_actuel.clear()
 	update_visuel_carte(le_perso, false)
 	label_info.text = "Où envoyer " + le_perso.nom_personnage + " ?"
 	queue_redraw()
 
-
-func _unhandled_input(event):
+func _input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		
+		# --- DEBUG : Est-ce que le clic est détecté ? ---
+		print("🖱️ SOURIS : Clic détecté à la position ", event.position)
+		
 		if personnage_selectionne != null:
 			var souris_pos = get_global_mouse_position()
 			var local_pos = tile_map.to_local(souris_pos)
 			var coord_cible = tile_map.local_to_map(local_pos)
 			
-			# EST-CE UNE CASE VALIDE ? (Connue par AStar)
+			print("🎯 TENTATIVE : Vers la case grille ", coord_cible)
+			
 			if map_coords_to_id.has(coord_cible):
 				var coord_depart = personnage_selectionne.coord_actuelle
-				
-				# CALCUL DU CHEMIN A*
 				var id_depart = map_coords_to_id[coord_depart]
 				var id_arrivee = map_coords_to_id[coord_cible]
-				
-				# get_id_path renvoie la liste des IDs (longue liste d'entiers)
 				var id_path = astar.get_id_path(id_depart, id_arrivee)
 				
 				if id_path.size() > 0:
-					# On convertit les IDs en Vector2i pour le perso
-					# On enlève le premier point (car c'est la case où on est déjà)
 					var chemin_grid : Array[Vector2i] = []
-					
-					# Pour le dessin
 					chemin_visuel_actuel.clear()
+					
+					# On ajoute le départ pour le tracé visuel
 					chemin_visuel_actuel.append(tile_map.to_global(tile_map.map_to_local(coord_depart)))
 					
-					# On commence à 1 pour ignorer la case de départ
 					for i in range(1, id_path.size()):
 						var id = id_path[i]
-						# Astuce inversée : On récupère la pos depuis Astar pour éviter de parcourir le dico à l'envers
-						# Mais le mieux est de stocker l'inverse. 
-						# Ici on va utiliser local_to_map sur la pos du point Astar par simplicité
-						var pos_point = astar.get_point_position(id) # C'est en local pixels selon le setup
-						# Attends, dans setup j'ai mis map_to_local, donc c'est du pixel local TileMapLayer
-						
+						var pos_point = astar.get_point_position(id)
 						var coord_hex = tile_map.local_to_map(pos_point)
 						chemin_grid.append(coord_hex)
-						
-						# Pour le visuel global
 						chemin_visuel_actuel.append(tile_map.to_global(pos_point))
 					
-					# ENVOI AU PERSONNAGE
-					var destination_finale_world = tile_map.to_global(tile_map.map_to_local(coord_cible))
-					personnage_selectionne.programmer_itineraire(chemin_grid, destination_finale_world)
+					var dest_world = tile_map.to_global(tile_map.map_to_local(coord_cible))
 					
-					# FEEDBACK
-					var tours_estimes = ceil(float(chemin_grid.size()) / float(personnage_selectionne.vitesse))
-					label_info.text = "Chemin trouvé ! Arrivée dans " + str(tours_estimes) + " tours."
+					# ENVOI DE L'ORDRE
+					personnage_selectionne.programmer_itineraire(chemin_grid, dest_world)
+					
+					# Feedback
+					var tours = ceil(float(chemin_grid.size()) / float(personnage_selectionne.vitesse))
+					label_info.text = "Ordre validé ! (" + str(tours) + " tours)"
 					update_visuel_carte(personnage_selectionne, true)
 					
-					personnage_selectionne = null # Désélection après ordre
+					personnage_selectionne = null
 					queue_redraw()
 				else:
-					label_info.text = "Pas de chemin possible vers là."
+					label_info.text = "Pas de chemin (Mur ou trop loin ?)"
+					print("❌ Echec : AStar ne trouve pas de chemin.")
 			else:
-				label_info.text = "Case inaccessible ou hors carte."
+				# C'est souvent ici que ça échoue si on clique un peu à côté
+				print("❌ Echec : La case ", coord_cible, " n'est pas connue du système A*.")
 
-
+# --- LE CŒUR DU PROBLÈME ÉTAIT ICI ---
 func _on_bouton_avancer_pressed():
 	heure_actuelle += 1
-	label_info.text = "Selectionnez un membre pour le faire avancer"
 	$Main/TimeManager.advance_hour()
+	label_info.text = "Sélectionnez un membre"
 	chemin_visuel_actuel.clear()
 	queue_redraw()
 	personnage_selectionne = null
 	
 	for perso in personnages:
+		# 1. On met à jour la logique (coord_actuelle change)
 		perso.avancer()
+		
+		# 2. On calcule la position PIXELS correspondante
+		var pos_monde = tile_map.to_global(tile_map.map_to_local(perso.coord_actuelle))
+		
+		# 3. On déclenche l'animation visuelle (C'EST ÇA QUI MANQUAIT)
+		perso.animer_deplacement(pos_monde)
+		
 		update_visuel_carte(perso, false)
 	
-	await get_tree().create_timer(0.05).timeout
-	
+	# Gestion des empilements après l'anim
+	await get_tree().create_timer(0.35).timeout
 	var cases_a_verifier = []
 	for p in personnages:
 		if not p.coord_actuelle in cases_a_verifier:
 			cases_a_verifier.append(p.coord_actuelle)
-	
 	for case in cases_a_verifier:
 		reorganiser_positions_sur_case(case)
 
-# Fonctions visuelles inchangées...
 func update_visuel_carte(perso, a_un_ordre: bool):
 	for carte in deck_container.get_children():
 		if carte.perso_reference == perso:
@@ -228,17 +203,15 @@ func reorganiser_positions_sur_case(case_grille: Vector2i):
 	
 	if nombre <= 1:
 		if nombre == 1:
+			# Recentre le perso unique au cas où
 			var tween = create_tween()
 			tween.tween_property(persos_sur_place[0], "global_position", centre_hex, 0.2)
 		return
 
 	var rayon = 25.0 
 	var angle_step = (2 * PI) / nombre 
-	
 	for i in range(nombre):
 		var angle = i * angle_step - (PI / 2) 
 		var offset = Vector2(cos(angle), sin(angle)) * rayon
-		var nouvelle_pos = centre_hex + offset
-		
 		var tween = create_tween()
-		tween.tween_property(persos_sur_place[i], "global_position", nouvelle_pos, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(persos_sur_place[i], "global_position", centre_hex + offset, 0.3)

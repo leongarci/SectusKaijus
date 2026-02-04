@@ -82,30 +82,65 @@ position = Vector2(185, 390)
 nom_personnage = "Lilou"
 couleur_point = Color(0.19215687, 0.57254905, 1, 1)
 texture_carte = ExtResource("3_1k3ka")
+competences = {
+"creuser": 0.0,
+"ecaille": 0.6,
+"essence": 0.0,
+"kidnapping": -0.4,
+"saule": 0.0
+}
 
 [node name="Titouan" parent="." unique_id=486234259 instance=ExtResource("1_dplmw")]
 position = Vector2(394, 127)
 nom_personnage = "Titouan"
 couleur_point = Color(0.38905436, 0.711722, 0.17854968, 1)
 texture_carte = ExtResource("4_dabsh")
+competences = {
+"creuser": -0.5,
+"ecaille": 0.0,
+"essence": 0.0,
+"kidnapping": 0.8,
+"saule": 0.0
+}
 
 [node name="Julien" parent="." unique_id=729635431 instance=ExtResource("1_dplmw")]
 position = Vector2(469, 341)
 nom_personnage = "Julien"
 couleur_point = Color(0.9998531, 0.23623207, 0.20981333, 1)
 texture_carte = ExtResource("5_l0jpj")
+competences = {
+"creuser": 0.6,
+"ecaille": 0.0,
+"essence": 0.4,
+"kidnapping": 0.0,
+"saule": 0.0
+}
 
 [node name="Clovis" parent="." unique_id=1263511504 instance=ExtResource("1_dplmw")]
 position = Vector2(266, 216)
 nom_personnage = "Clovis"
 couleur_point = Color(0.30544624, 0.3054462, 0.3054462, 1)
 texture_carte = ExtResource("6_y0upk")
+competences = {
+"creuser": 0.0,
+"ecaille": 0.6,
+"essence": 0.0,
+"kidnapping": -0.4,
+"saule": 0.0
+}
 
 [node name="Karine" parent="." unique_id=869408777 instance=ExtResource("1_dplmw")]
 position = Vector2(709, 170)
 nom_personnage = "Karine"
 couleur_point = Color(0.87058824, 0.7019608, 0, 1)
 texture_carte = ExtResource("7_iq4jt")
+competences = {
+"creuser": 0.0,
+"ecaille": 0.6,
+"essence": 0.0,
+"kidnapping": -0.4,
+"saule": 0.0
+}
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=838043804]
 
