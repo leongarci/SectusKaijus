@@ -1,44 +1,76 @@
 extends Button
 
-# Signal envoyé au "Chef d'orchestre" quand on clique la carte
 signal carte_cliquee(le_perso)
 
-var perso_reference = null # Lien vers le vrai bonhomme sur la map
+var perso_reference = null
+var a_un_ordre_valide : bool = false
+
+# Tu peux changer cette valeur pour grossir/rétrécir tes cartes
+const LARGEUR_VOULUE = 120.0 
 
 func setup(perso_a_lier):
 	perso_reference = perso_a_lier
-	# Affiche le nom sur le bouton
-	text = perso_a_lier.nom_personnage
 	
-	# --- STYLE NORMAL ---
-	var style_normal = StyleBoxFlat.new()
-	style_normal.bg_color = perso_a_lier.couleur_point
-	style_normal.bg_color.a = 0.8 # Un peu transparent
-	
-	# --- STYLE HOVER (Survol) ---
-	# On crée une copie plus claire pour le survol
-	var style_hover = style_normal.duplicate()
-	style_hover.bg_color = perso_a_lier.couleur_point.lightened(0.2) # +20% de luminosité
-	style_hover.bg_color.a = 1.0 # Pleine opacité au survol
-	
-	# --- STYLE PRESSED (Clic) ---
-	var style_pressed = style_normal.duplicate()
-	style_pressed.bg_color = perso_a_lier.couleur_point.darkened(0.2)
-	
-	# Application des styles
-	add_theme_stylebox_override("normal", style_normal)
-	add_theme_stylebox_override("hover", style_hover)
-	add_theme_stylebox_override("pressed", style_pressed)
+	if perso_a_lier.texture_carte != null:
+		# 1. ASSIGNATION
+		icon = perso_a_lier.texture_carte
+		
+		# 2. CALCUL DES PROPORTIONS (Règle de trois)
+		var taille_reelle = icon.get_size()
+		# On calcule le ratio (Hauteur / Largeur)
+		var ratio = taille_reelle.y / taille_reelle.x
+		
+		# On applique ce ratio à notre largeur voulue (120px)
+		var hauteur_calculee = LARGEUR_VOULUE * ratio
+		
+		# 3. APPLICATION DE LA TAILLE
+		custom_minimum_size = Vector2(LARGEUR_VOULUE, hauteur_calculee)
+		expand_icon = true # AUTORISE le redimensionnement de l'image
+		
+		# 4. SUPPRESSION DU CADRE (Style vide)
+		var style_vide = StyleBoxEmpty.new()
+		add_theme_stylebox_override("normal", style_vide)
+		add_theme_stylebox_override("hover", style_vide)
+		add_theme_stylebox_override("pressed", style_vide)
+		add_theme_stylebox_override("focus", style_vide)
+		
+		text = "" 
+		
+		# Couleur de base un peu "éteinte" pour que le hover ressorte bien
+		modulate = Color(0.85, 0.85, 0.85, 1)
+
+	else:
+		# Fallback sans image
+		text = perso_a_lier.nom_personnage
+		custom_minimum_size = Vector2(LARGEUR_VOULUE, LARGEUR_VOULUE * 1.4)
+
+# --- GESTION DE LA LUMIÈRE (HOVER) ---
+
+func _ready():
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
+
+func _on_mouse_entered():
+	# Si le perso est disponible, on l'éclaire (Blanc pur voir un peu brillant)
+	if not a_un_ordre_valide:
+		modulate = Color(1.1, 1.1, 1.1, 1)
+
+func _on_mouse_exited():
+	# Retour à la couleur de base
+	if not a_un_ordre_valide:
+		modulate = Color(0.85, 0.85, 0.85, 1)
+
+# --- CLIC ET ÉTAT ---
 
 func _pressed():
-	# Quand on clique le bouton, on dit au jeu : "Sélectionne ce perso !"
 	carte_cliquee.emit(perso_reference)
 
 func mettre_a_jour_visuel(a_un_ordre: bool):
+	a_un_ordre_valide = a_un_ordre
+	
 	if a_un_ordre:
-		# On "grise" et on assombrit pour montrer que c'est fait
-		# On ne change PAS le texte pour éviter que le bouton change de taille
-		modulate = Color(0.5, 0.5, 0.5, 0.7)
+		# Si le perso a fini son tour : Gris foncé
+		modulate = Color(0.4, 0.4, 0.4, 1)
 	else:
-		# On remet à la normale (Blanc éclatant = couleur d'origine)
-		modulate = Color(1, 1, 1, 1)
+		# Si le perso redevient dispo : Couleur normale
+		modulate = Color(0.85, 0.85, 0.85, 1)

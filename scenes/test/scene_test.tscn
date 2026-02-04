@@ -2,14 +2,32 @@
 
 [ext_resource type="PackedScene" uid="uid://c6amc01xkkysk" path="res://scenes/characters/character.tscn" id="1_dplmw"]
 [ext_resource type="Script" uid="uid://dq7bnj1eg7kda" path="res://scripts/test/scene_test.gd" id="1_oqoec"]
+[ext_resource type="Texture2D" uid="uid://df6uh5yxychsn" path="res://assets/ui/cards/lilou.png" id="3_1k3ka"]
+[ext_resource type="Texture2D" uid="uid://dujibpi4td67q" path="res://assets/ui/cards/titouan.png" id="4_dabsh"]
+[ext_resource type="Texture2D" uid="uid://blfo53s2sxkod" path="res://assets/ui/cards/julien.png" id="5_l0jpj"]
+[ext_resource type="Texture2D" uid="uid://b7lux567d2t7k" path="res://assets/ui/cards/clovis.png" id="6_y0upk"]
+[ext_resource type="Texture2D" uid="uid://ucy2pesihgyx" path="res://assets/ui/cards/karine.png" id="7_iq4jt"]
+[ext_resource type="PackedScene" uid="uid://bdm2pc1kcoqk3" path="res://scenes/map/map.tscn" id="8_dabsh"]
 
-[node name="Scene" type="Node2D" unique_id=53717244]
+[node name="Scene" type="Node2D" unique_id=53717244 node_paths=PackedStringArray("tile_map")]
 script = ExtResource("1_oqoec")
+tile_map = NodePath("Main/TileMapLayer")
 
-[node name="Character" parent="." unique_id=1939404819 instance=ExtResource("1_dplmw")]
+[node name="Main" parent="." unique_id=851540061 instance=ExtResource("8_dabsh")]
+z_index = -1
+position = Vector2(468, 202)
+
+[node name="TileMapLayer" parent="Main" index="0" unique_id=1726121890]
+scale = Vector2(1, 1)
+
+[node name="Camera2D" parent="Main/TileMapLayer" index="0" unique_id=1822370931]
+zoom = Vector2(0.3, 0.3)
+
+[node name="Lilou" parent="." unique_id=1939404819 instance=ExtResource("1_dplmw")]
 position = Vector2(185, 390)
-nom_personnage = "Charlotte"
+nom_personnage = "Lilou"
 couleur_point = Color(0.19215687, 0.57254905, 1, 1)
+texture_carte = ExtResource("3_1k3ka")
 competences = {
 "creuser": 0.0,
 "ecaille": 0.6,
@@ -18,10 +36,11 @@ competences = {
 "saule": 0.0
 }
 
-[node name="Character2" parent="." unique_id=486234259 instance=ExtResource("1_dplmw")]
+[node name="Titouan" parent="." unique_id=486234259 instance=ExtResource("1_dplmw")]
 position = Vector2(394, 127)
-nom_personnage = "Léon"
+nom_personnage = "Titouan"
 couleur_point = Color(1, 0.22626406, 0.1713596, 1)
+texture_carte = ExtResource("4_dabsh")
 competences = {
 "creuser": -0.5,
 "ecaille": 0.0,
@@ -30,10 +49,11 @@ competences = {
 "saule": 0.0
 }
 
-[node name="Character3" parent="." unique_id=729635431 instance=ExtResource("1_dplmw")]
+[node name="Julien" parent="." unique_id=729635431 instance=ExtResource("1_dplmw")]
 position = Vector2(469, 341)
-nom_personnage = "Maxime"
+nom_personnage = "Julien"
 couleur_point = Color(0.05882353, 0.7647059, 0.18431373, 1)
+texture_carte = ExtResource("5_l0jpj")
 competences = {
 "creuser": 0.6,
 "ecaille": 0.0,
@@ -42,21 +62,48 @@ competences = {
 "saule": 0.0
 }
 
+[node name="Clovis" parent="." unique_id=1263511504 instance=ExtResource("1_dplmw")]
+position = Vector2(266, 216)
+nom_personnage = "Clovis"
+couleur_point = Color(0, 0.11764706, 0.23137255, 1)
+texture_carte = ExtResource("6_y0upk")
+competences = {
+"creuser": 0.0,
+"ecaille": 0.6,
+"essence": 0.0,
+"kidnapping": -0.4,
+"saule": 0.0
+}
+
+[node name="Karine" parent="." unique_id=869408777 instance=ExtResource("1_dplmw")]
+position = Vector2(709, 170)
+nom_personnage = "Karine"
+couleur_point = Color(0.788105, 0.30083638, 0.9873108, 1)
+texture_carte = ExtResource("7_iq4jt")
+competences = {
+"creuser": 0.0,
+"ecaille": 0.6,
+"essence": 0.0,
+"kidnapping": -0.4,
+"saule": 0.0
+}
+
 [node name="UI" type="CanvasLayer" parent="." unique_id=838043804]
 
 [node name="BoutonAvancer" type="Button" parent="UI" unique_id=244271444]
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -84.5
-offset_top = -115.0
-offset_right = 84.5
-offset_bottom = -75.0
-grow_horizontal = 2
+offset_left = -263.0
+offset_top = -110.0
+offset_right = -101.0
+offset_bottom = -48.0
+grow_horizontal = 0
 grow_vertical = 0
 text = "Avancer d'une heure"
+autowrap_mode = 2
 
 [node name="DeckContainer" type="HBoxContainer" parent="UI" unique_id=177772946]
 anchors_preset = 12
@@ -64,6 +111,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = -66.0
+offset_right = -389.0
 grow_horizontal = 2
 grow_vertical = 0
 
@@ -77,3 +125,5 @@ offset_right = 103.0
 offset_bottom = 33.0
 grow_horizontal = 2
 text = "Cliquez sur un personnage"
+
+[editable path="Main"]
