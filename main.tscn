@@ -23,6 +23,7 @@
 [ext_resource type="Texture2D" uid="uid://6j0hm26kxub2" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/salleSport.png" id="20_0odxb"]
 [ext_resource type="Texture2D" uid="uid://bjf63kb7j6ue0" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/cimetiere.png" id="21_lswn8"]
 [ext_resource type="Texture2D" uid="uid://btdkcidfiicr7" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/hopital.png" id="22_a6jrf"]
+[ext_resource type="Texture2D" uid="uid://duxt1aadw0wd" path="res://assets/HK - Old Skool Hand Drawn/OSHD - Background/Select.png" id="24_1u8w0"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_htxhm"]
 texture = ExtResource("1_2cqfq")
@@ -188,3 +189,16 @@ script = ExtResource("2_h2yge")
 [node name="Camera2D" type="Camera2D" parent="TileMapLayer" unique_id=1822370931]
 position = Vector2(368, 327)
 zoom = Vector2(0.3, 0.3)
+
+[node name="SelectionHighlight" type="Sprite2D" parent="TileMapLayer" unique_id=70522939]
+visible = false
+texture = ExtResource("24_1u8w0")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=471304397]
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" unique_id=1561007474]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LieuLabel" type="Label" parent="CanvasLayer/PanelContainer" unique_id=1812561544]
+layout_mode = 2

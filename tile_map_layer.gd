@@ -1,27 +1,30 @@
 extends TileMapLayer
 
+@onready var selection_highlight = $SelectionHighlight
+@onready var lieu_label = $"../CanvasLayer/PanelContainer/LieuLabel" # Ajuste le chemin selon ton arbre
+
 func _input(event):
-	# On détecte le clic gauche
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		
-		# 1. Position de la souris
 		var global_mouse_pos = get_global_mouse_position()
-		
-		# 2. Conversion en coordonnées de grille
-		# On utilise 'to_local' car le clic est en position globale (écran)
 		var tile_pos = local_to_map(to_local(global_mouse_pos))
+		var data = get_cell_tile_data(tile_pos)
 		
-		# 3. Récupérer les données de la tuile
-		# Note : On ne met plus "0" devant tile_pos !
-		var tile_data = get_cell_tile_data(tile_pos)
-		
-		if tile_data:
-			# 4. Lire ton Custom Data
-			var lieu = tile_data.get_custom_data("nom_lieu")
+		if data:
+			var nom = data.get_custom_data("nom_lieu")
 			
-			if lieu != "":
-				print("Lieu identifié : ", lieu)
+			# 1. Gérer le surlignage
+			selection_highlight.visible = true
+			# map_to_local nous donne le centre exact de l'hexagone
+			selection_highlight.position = map_to_local(tile_pos)
+			
+			# 2. Gérer le texte
+			if nom != "":
+				lieu_label.text = "Lieu : " + nom
 			else:
-				print("Case vide en : ", tile_pos)
+				lieu_label.text = "Terrain vague"
+				# Optionnel : masquer le contour si c'est vide
+				# selection_highlight.visible = false 
 		else:
-			print("Aucune tuile ici.")
+			# Si on clique hors de la map
+			selection_highlight.visible = false
+			lieu_label.text = "---"
