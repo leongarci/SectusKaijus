@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://dcpv873pqmdhg"]
+
+[ext_resource type="Script" uid="uid://dq5n7bwg41hru" path="res://scripts/main/Main.gd" id="1_nha0i"]
+[ext_resource type="Script" uid="uid://qpqhxwq4mdii" path="res://scripts/ui/UI.gd" id="2_q24mn"]
+
+[node name="Main" type="Node2D" unique_id=2036217395]
+script = ExtResource("1_nha0i")
+
+[node name="MissionManager" type="Node" parent="." unique_id=613164737]
+
+[node name="TimeManager" type="Node" parent="." unique_id=2089332324]
+
+[node name="UI" type="Control" parent="." unique_id=1527947728]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_q24mn")
+
+[node name="TimeLabel" type="Label" parent="UI" unique_id=1947912242]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="NextHourButton" type="Button" parent="UI" unique_id=1276337856]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="MissionPanel" type="PanelContainer" parent="UI" unique_id=1819037249]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MissionBox" type="VBoxContainer" parent="UI/MissionPanel" unique_id=153831861]
+layout_mode = 2
+
+[node name="MissionTitle" type="Label" parent="UI/MissionPanel/MissionBox" unique_id=1413434960]
+layout_mode = 2
+
+[node name="MissionList" type="ItemList" parent="UI/MissionPanel/MissionBox" unique_id=707952185]
+layout_mode = 2
+
+[node name="MissionHint" type="Label" parent="UI/MissionPanel/MissionBox" unique_id=1950195270]
+layout_mode = 2

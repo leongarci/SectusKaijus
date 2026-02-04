@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c6amc01xkkysk"]
+
+[ext_resource type="Script" uid="uid://c5fxs0e2okneo" path="res://scripts/characters/character.gd" id="1_glpr6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_glpr6"]
+
+[node name="Character" type="Node2D" unique_id=1939404819]
+script = ExtResource("1_glpr6")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1953154874]
+custom_minimum_size = Vector2(-10, -10)
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.36602402, 0, 0.96733344, 1)
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1344510310]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1362668883]
+position = Vector2(10, 9)
+scale = Vector2(1.5, 1.5)
+shape = SubResource("RectangleShape2D_glpr6")
