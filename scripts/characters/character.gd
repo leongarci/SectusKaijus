@@ -8,7 +8,17 @@ signal selection(mon_instance)
 @export var vitesse: int = 1
 @export var coord_actuelle: Vector2i = Vector2i(0, 0)
 @export var texture_carte : Texture2D
+@export var traits: Array[String] = []
+@export var competences: Dictionary = {"vol": 0.0, "savoir": 0.0, "force": 0.0, "rituel": 0.0, "discretion": 0.0}
 
+var temps_mission_restant: int = 0
+var mission_actuelle_titre: String = ""
+
+var mission_actuelle_data = null 
+var resultat_secret = {}
+
+func est_occupe() -> bool:
+	return temps_mission_restant > 0
 # Stockage du chemin
 var chemin_a_parcourir: Array[Vector2i] = [] 
 
@@ -45,6 +55,14 @@ func programmer_itineraire(chemin: Array[Vector2i], _pos_finale_monde: Vector2):
 
 # --- EXECUTION DU MOUVEMENT (LOGIQUE) ---
 func avancer():
+	if est_occupe():
+		temps_mission_restant -= 1
+		print("%s travaille sur : %s. Reste : %sh" % [nom_personnage, mission_actuelle_titre, temps_mission_restant])
+		if temps_mission_restant == 0:
+			print("%s a terminé sa mission !" % nom_personnage)
+			mission_actuelle_titre = ""
+		return # Empeche le mouvement si occupé
+	
 	if chemin_a_parcourir.size() > 0:
 		# 1. On détermine le nombre de pas possibles (Vitesse)
 		var pas_ce_tour = min(vitesse, chemin_a_parcourir.size())

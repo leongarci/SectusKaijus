@@ -8,6 +8,8 @@ var scene_carte = preload("res://scenes/characters/carte_perso.tscn")
 @export var tile_map : TileMapLayer 
 @onready var label_info = $UI/MessageInfo 
 @onready var deck_container = $UI/DeckContainer
+@onready var bouton_mission = %BoutonMission
+
 
 var personnages = []
 
@@ -16,14 +18,16 @@ var astar = AStar2D.new()
 var map_coords_to_id = {} 
 var id_counter = 0
 var chemin_visuel_actuel : PackedVector2Array = []
+var mission_en_attente = null
+var cultistes_sur_le_lieu = []
 
 func _ready():
 	if tile_map == null:
 		push_error("ERREUR : Tile Map non assignée !")
 		return
-	
 	construire_graphe_astar()
-	
+	bouton_mission.pressed.connect(_on_bouton_mission_pressed)
+	bouton_mission.hide() # Caché au départ
 	var noms_puants = ["Clovis", "Lilou", "Titouan", "Julien", "Karine"]
 	for nom in noms_puants:
 		if has_node(nom):
@@ -54,6 +58,23 @@ func _ready():
 	for p in personnages:
 		reorganiser_positions_sur_case(p.coord_actuelle)
 
+
+
+func _on_bouton_mission_pressed():
+	print("Clic sur le bouton Lancer Mission détecté !")
+	print("Personnage_selectionne : ",personnage_selectionne)
+	if personnage_selectionne:
+		var lieu = get_nom_lieu(personnage_selectionne.coord_actuelle)
+		# On réutilise ta fonction de popup existante
+		print("Lieu :",lieu)
+		preparer_popup_mission(lieu, personnage_selectionne.coord_actuelle)
+		
+func get_nom_lieu(coords: Vector2i) -> String:
+	var data = tile_map.get_cell_tile_data(coords)
+	if data:
+		return data.get_custom_data("nom_lieu")
+	return ""
+	
 func construire_graphe_astar():
 	astar.clear()
 	map_coords_to_id.clear()
@@ -75,7 +96,6 @@ func construire_graphe_astar():
 				var id_voisin = map_coords_to_id[voisin]
 				if not astar.are_points_connected(id_actuel, id_voisin):
 					astar.connect_points(id_actuel, id_voisin)
-	print("Graphe A* construit avec ", id_counter, " points.")
 
 func _draw():
 	if personnage_selectionne != null:
@@ -103,9 +123,27 @@ func _on_selection_demandee(le_perso):
 	chemin_visuel_actuel.clear()
 	update_visuel_carte(le_perso, false)
 	label_info.text = "Où envoyer " + le_perso.nom_personnage + " ?"
+	actualiser_visibilite_bouton_mission(le_perso)
 	queue_redraw()
 
-func _input(event):
+func actualiser_visibilite_bouton_mission(perso):
+	# On ne montre le bouton que si le perso est immobile et sur un lieu valide
+	if not perso.est_occupe() and perso.chemin_a_parcourir.size() == 0:
+		var lieu = get_nom_lieu(perso.coord_actuelle)
+		if lieu != "" and est_mission_disponible_ici(lieu):
+			bouton_mission.show()
+			return
+	bouton_mission.hide()
+
+func est_mission_disponible_ici(lieu_nom: String) -> bool:
+	for m in $Main/MissionManager.missions:
+		# La mission n'est disponible que si son status est 0
+		if m["status"] == 0 and lieu_nom in m["places"]:
+			if is_hour_in_range(heure_actuelle, m["hours"]):
+				return true
+	return false
+
+func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		
 		# --- DEBUG : Est-ce que le clic est détecté ? ---
@@ -116,7 +154,6 @@ func _input(event):
 			var local_pos = tile_map.to_local(souris_pos)
 			var coord_cible = tile_map.local_to_map(local_pos)
 			
-			print("🎯 TENTATIVE : Vers la case grille ", coord_cible)
 			
 			if map_coords_to_id.has(coord_cible):
 				var coord_depart = personnage_selectionne.coord_actuelle
@@ -157,28 +194,122 @@ func _input(event):
 				# C'est souvent ici que ça échoue si on clique un peu à côté
 				print("❌ Echec : La case ", coord_cible, " n'est pas connue du système A*.")
 
-# --- LE CŒUR DU PROBLÈME ÉTAIT ICI ---
+
+
+func _actualiser_affichage_chances():
+	var participants = []
+	var vbox = %PopupMission.get_node("VBoxContainer")
+	
+	# On regarde qui est coché
+	for child in vbox.get_children():
+		if child is CheckBox and child.button_pressed:
+			participants.append(child.get_meta("perso"))
+	
+	# On demande au MissionManager de calculer la probabilité
+	var proba = $Main/MissionManager.calculer_probabilite(mission_en_attente, participants)
+	
+	# On met à jour le texte (ex: "Chances de succès : 65%")
+	var label = vbox.get_node("LabelChances")
+	label.text = "Chances de succès : " + str(snapped(proba * 100, 1)) + "%"
+
+func preparer_popup_mission(lieu_nom: String, coords: Vector2i):
+	print("Recherche de mission pour : ", lieu_nom)
+	mission_en_attente = null
+	
+	# Utilisation de %MissionManager pour être cohérent
+	for m in $Main/MissionManager.missions:
+		# CORRECTION ICI : On cherche la mission avec status == 0 (Disponible)
+		if m["status"] == 0 and lieu_nom in m["places"]:
+			mission_en_attente = m
+			break
+	
+	if mission_en_attente == null:
+		print("❌ Aucune mission disponible avec status 0 à cet endroit.")
+		return
+
+	print("✅ Mission trouvée : ", mission_en_attente["title"])
+
+	var popup = %PopupMission
+	var vbox = popup.get_node("VBoxContainer")
+	
+	# Nettoyage
+	for child in vbox.get_children():
+		if child is CheckBox:
+			child.queue_free()
+	
+	cultistes_sur_le_lieu.clear()
+	for p in personnages:
+		if p.coord_actuelle == coords and not p.est_occupe():
+			cultistes_sur_le_lieu.append(p)
+	
+	for c in cultistes_sur_le_lieu:
+		var check = CheckBox.new()
+		check.text = c.nom_personnage
+		check.set_meta("perso", c)
+		check.toggled.connect(func(_toggled): _actualiser_affichage_chances())
+		vbox.add_child(check)
+	
+	popup.title = "Mission : " + mission_en_attente["title"]
+	_actualiser_affichage_chances()
+	popup.popup_centered()
+	print("🚀 Popup affichée !")
+	
+func _on_popup_mission_confirmed():
+	var participants = []
+	var vbox = %PopupMission.get_node("VBoxContainer")
+	for child in vbox.get_children():
+		if child is CheckBox and child.button_pressed:
+			participants.append(child.get_meta("perso"))
+	
+	if participants.size() > 0:
+		# 1. On calcule le résultat MAINTENANT mais on le garde secret
+		var resultat = %MissionManager.calculer_resultat_final(mission_en_attente, participants)
+		
+		# 2. On verrouille la mission et les cultistes
+		mission_en_attente["status"] = 1 # "En cours"
+		
+		for p in participants:
+			p.temps_mission_restant = mission_en_attente["duration"]
+			p.mission_actuelle_data = mission_en_attente
+			p.resultat_secret = resultat # Le cultiste connaît l'issue, mais pas le joueur
+			
+		label_info.text = "Mission lancée. Revenez dans " + str(mission_en_attente["duration"]) + "h."
+		bouton_mission.hide()
+
+# Helper pour gérer le passage de minuit dans les horaires
+func is_hour_in_range(h, range_arr):
+	var start = range_arr[0]
+	var end = range_arr[1]
+	if start <= end:
+		return h >= start and h < end
+	else: # Cas où la mission traverse minuit (ex: 22h à 04h)
+		return h >= start or h < end
+
 func _on_bouton_avancer_pressed():
-	heure_actuelle += 1
+	# 1. Mise à jour du temps
 	$Main/TimeManager.advance_hour()
+	heure_actuelle = $Main/TimeManager.hour 
+	
+	# 2. Nettoyage de l'interface (On cache le bouton de mission ici !)
 	label_info.text = "Sélectionnez un membre"
+	bouton_mission.hide() 
 	chemin_visuel_actuel.clear()
 	queue_redraw()
 	personnage_selectionne = null
 	
+	# 3. Mouvement des personnages
 	for perso in personnages:
-		# 1. On met à jour la logique (coord_actuelle change)
+		var fini_maintenant = (perso.temps_mission_restant == 1)
 		perso.avancer()
 		
-		# 2. On calcule la position PIXELS correspondante
+		if fini_maintenant and perso.mission_actuelle_data != null:
+			terminer_et_afficher_mission(perso)
 		var pos_monde = tile_map.to_global(tile_map.map_to_local(perso.coord_actuelle))
-		
-		# 3. On déclenche l'animation visuelle (C'EST ÇA QUI MANQUAIT)
 		perso.animer_deplacement(pos_monde)
-		
 		update_visuel_carte(perso, false)
+		
 	
-	# Gestion des empilements après l'anim
+	# 4. Gestion des empilements
 	await get_tree().create_timer(0.35).timeout
 	var cases_a_verifier = []
 	for p in personnages:
@@ -186,6 +317,25 @@ func _on_bouton_avancer_pressed():
 			cases_a_verifier.append(p.coord_actuelle)
 	for case in cases_a_verifier:
 		reorganiser_positions_sur_case(case)
+
+func terminer_et_afficher_mission(perso):
+	var m = perso.mission_actuelle_data
+	var res = perso.resultat_secret
+	
+	# 1. On marque le statut définitif dans le manager
+	if res.success:
+		m["status"] = 2 # Réussie
+	else:
+		m["status"] = 3 # Échouée
+	
+	# 2. On affiche la popup de résultat
+	%PopupResultat.title = "Rapport de mission"
+	%PopupResultat.dialog_text = res.msg
+	%PopupResultat.popup_centered()
+	
+	# 3. On nettoie le personnage
+	perso.mission_actuelle_data = null
+	perso.resultat_secret = {}
 
 func update_visuel_carte(perso, a_un_ordre: bool):
 	for carte in deck_container.get_children():
@@ -203,7 +353,6 @@ func reorganiser_positions_sur_case(case_grille: Vector2i):
 	
 	if nombre <= 1:
 		if nombre == 1:
-			# Recentre le perso unique au cas où
 			var tween = create_tween()
 			tween.tween_property(persos_sur_place[0], "global_position", centre_hex, 0.2)
 		return
