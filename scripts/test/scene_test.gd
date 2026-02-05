@@ -8,7 +8,7 @@ var scene_transition_jour = preload("res://scenes/ui/DayTransition.tscn")
 @export var tile_map : TileMapLayer
 
 var scene_bouton_monde = preload("res://scenes/ui/BoutonMission.tscn")
-@onready var conteneur_boutons = $Main/ConteneurBoutonsMission
+@onready var conteneur_boutons = $ConteneurBoutonsMission
 
 @onready var label_info = $UI/MessageInfo
 @onready var deck_container = $UI/DeckContainer
@@ -230,7 +230,9 @@ func forcer_passage_jour_suivant():
 	var nouveau_jour = $Main/TimeManager.day
 	
 	# 3. Transition
-	declencher_transition_nouveau_jour(nouveau_jour)
+	var overlay = preload("res://scenes/ui/TransitionOverlay.tscn").instantiate()
+	get_tree().current_scene.add_child(overlay) 
+	overlay.transition_to(preload("res://scenes/ui/DayTransition.tscn"))
 	
 	# 4. Nettoyage
 	label_info.text = "Repli stratégique... Jour %d" % nouveau_jour

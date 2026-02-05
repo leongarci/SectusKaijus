@@ -31,9 +31,6 @@ scale = Vector2(1, 1)
 [node name="Camera2D" parent="Main/TileMapLayer" index="0" unique_id=1822370931]
 zoom = Vector2(0.3, 0.3)
 
-[node name="ConteneurBoutonsMission" type="Node2D" parent="Main" unique_id=1747389012]
-unique_name_in_owner = true
-
 [node name="UI_mission" type="Control" parent="Main/CanvasLayer" parent_id_path=PackedInt32Array(851540061, 471304397) index="1" unique_id=1095418352]
 layout_mode = 3
 anchors_preset = 15
@@ -221,6 +218,8 @@ layout_mode = 2
 
 [node name="PopupResultat" type="AcceptDialog" parent="." unique_id=2090242370]
 unique_name_in_owner = true
+
+[node name="ConteneurBoutonsMission" type="Node2D" parent="." unique_id=1645426194]
 
 [connection signal="pressed" from="UI/BoutonAvancer" to="." method="_on_bouton_avancer_pressed"]
 
