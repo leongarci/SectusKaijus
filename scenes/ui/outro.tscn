@@ -1,0 +1,111 @@
+[gd_scene format=3 uid="uid://dkxyv48pj2kn0"]
+
+[ext_resource type="Script" uid="uid://bpptr3hfrdyts" path="res://scripts/ui/outro.gd" id="1_pbcje"]
+[ext_resource type="Texture2D" uid="uid://g6svakldn1ac" path="res://assets/ui/titouan.png" id="2_mo71e"]
+[ext_resource type="FontFile" uid="uid://ki71rasupmd0" path="res://assets/fonts/CourierPrime-Bold.ttf" id="3_4au3y"]
+[ext_resource type="Texture2D" uid="uid://b88pyd50q67bi" path="res://assets/ui/suite.png" id="4_hyaci"]
+[ext_resource type="Script" path="res://scenes/bouton_reactif.gd" id="5_3jcsr"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_mvsb1"]
+font = ExtResource("3_4au3y")
+font_size = 24
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="VideoStreamTheora" id="VideoStreamTheora_yxqfd"]
+file = "res://assets/ui/Vidéo_sans_dinosaures_ni_véhicules.ogv"
+
+[node name="Outro" type="Control" unique_id=2048836031]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pbcje")
+
+[node name="ColorRectOutro" type="ColorRect" parent="." unique_id=1425443128]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="TextureRectOutro" type="TextureRect" parent="ColorRectOutro" unique_id=1242480336]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -271.5
+offset_top = -294.0
+offset_right = -12.5
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_mo71e")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="DialogueOutro" type="Panel" parent="." unique_id=375310693]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -247.5
+offset_top = -64.0
+offset_right = 247.5
+offset_bottom = 131.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TexteHistoireOutro" type="Label" parent="." unique_id=557840859]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -234.0
+offset_top = -64.0
+offset_right = 229.0
+offset_bottom = 131.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 6
+label_settings = SubResource("LabelSettings_mvsb1")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="BoutonSuiteOutro" type="TextureButton" parent="." unique_id=1804557844]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -142.25
+offset_top = -156.0
+offset_right = 142.25
+offset_bottom = -52.0
+grow_horizontal = 2
+grow_vertical = 0
+texture_normal = ExtResource("4_hyaci")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("5_3jcsr")
+
+[node name="VideoStreamPlayerOutro" type="VideoStreamPlayer" parent="." unique_id=1104517194]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.056
+anchor_bottom = 0.075
+offset_right = 1444.488
+offset_bottom = 905.4
+stream = SubResource("VideoStreamTheora_yxqfd")
+expand = true

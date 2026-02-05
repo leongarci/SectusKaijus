@@ -5,7 +5,7 @@ var Echec = [
 	"Quelle manque cruel d'efficacité... Médiocre !!!",
 	"Les membres de la secte ont échoué à 3 missions... Sous vos ordres !",
 	"La secte est désormais repérée... Attendez demain pour que la ville se calme",
-	"Ne me décevez pas une journée de plus Titouan, je place de grands espoirs en vous !",
+	"J'attends bien mieux, Titouan, je place de grands espoirs en vous !",
 	"N'oubliez pas, vos cultistes sont... différents. Bon courage"
 ]
 
