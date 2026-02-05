@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b3rqgprrbvwbb"]
 
-[ext_resource type="Script" path="res://scripts/ui/DayTransition.gd" id="1_oakl5"]
+[ext_resource type="Script" uid="uid://df8h3sk2k0353" path="res://scripts/ui/DayTransition.gd" id="1_oakl5"]
 [ext_resource type="Texture2D" uid="uid://dy0rb3ahvjj4c" path="res://assets/ui/ville nuit.jpg" id="2_fifax"]
 [ext_resource type="Texture2D" uid="uid://cqklsa2tte1te" path="res://assets/ui/lune__2_-removebg-preview.png" id="3_fifax"]
 [ext_resource type="Script" path="res://scripts/ui/OkButton.gd" id="3_oakl5"]

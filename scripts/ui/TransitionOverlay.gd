@@ -1,13 +1,26 @@
 extends CanvasLayer
 
+# Signal émis quand l'écran est totalement noir
+signal ecran_couvert
+
 @onready var anim: AnimationPlayer = $AnimationPlayerTO
 
-func transition_to(scene: PackedScene) -> void:
-	# 1) Ferme l'écran (la coulée descend)
-	anim.play("wipe_down")
-	await anim.animation_finished
+# On retire le code dans _ready(). C'est scene_test qui décidera quand le lancer.
+func _ready():
+	pass 
 
-	# 2) Change de scène quand c'est couvert
-	get_tree().change_scene_to_file ("res://scenes/ui/EchecTransiDay.tscn")
-	
+func couvrir_ecran() -> void:
+	# On vérifie si l'animation existe (attention à la majuscule/minuscule de ton anim)
+	if anim.has_animation("wipe_down"):
+		anim.play("wipe_down")
+		await anim.animation_finished
+		ecran_couvert.emit() # Dit au chef "C'est bon, c'est noir !"
+	else:
+		# Sécurité si l'anim n'existe pas ou s'appelle autrement
+		push_warning("Animation 'wipe_down' introuvable dans TransitionOverlay.")
+		ecran_couvert.emit()
+
+func decouvrir_ecran() -> void:
+	# Si tu as une animation "wipe_up", tu peux la mettre ici
+	# Pour l'instant, on se contentera de supprimer le noeud depuis le parent
 	queue_free()
