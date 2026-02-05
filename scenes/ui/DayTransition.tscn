@@ -1,0 +1,285 @@
+[gd_scene format=3 uid="uid://ck16yumtc7u0u"]
+
+[ext_resource type="Script" uid="uid://df8h3sk2k0353" path="res://scripts/ui/DayTransition.gd" id="1_oakl5"]
+[ext_resource type="Texture2D" uid="uid://d36rdw4kaem5m" path="res://assets/ui/ok.png" id="2_18qbf"]
+[ext_resource type="Texture2D" uid="uid://dy0rb3ahvjj4c" path="res://assets/ui/ville nuit.jpg" id="2_fifax"]
+[ext_resource type="Texture2D" uid="uid://cqklsa2tte1te" path="res://assets/ui/lune__2_-removebg-preview.png" id="3_fifax"]
+[ext_resource type="Script" uid="uid://ckc8olqud8mjm" path="res://scripts/ui/OkButton.gd" id="3_oakl5"]
+
+[sub_resource type="Animation" id="Animation_fifax"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Dimmer:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 0.54901963)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PanelTransition:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("PanelTransition/VBoxTransition/DayTransiLabel:theme_override_font_sizes/font_size")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [24]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Moon:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-146, 648)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("PanelTransition/VBoxTransition/DayTransiLabel:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ydqjb"]
+resource_name = "intro"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Dimmer:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 0.54901963)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PanelTransition:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("PanelTransition/VBoxTransition/DayTransiLabel:theme_override_font_sizes/font_size")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.35, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [24, 36, 32]
+}
+
+[sub_resource type="Animation" id="Animation_17phr"]
+resource_name = "sun_cycle"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Moon:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.02, 2, 4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-154, 650), Vector2(606, 40), Vector2(1992, 960)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Dimmer:color")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2, 4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0.6862745), Color(0, 0, 0, 0.8862745), Color(0, 0, 0, 0.6784314)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("PanelTransition/VBoxTransition/DayTransiLabel:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(1.7, 2, 2.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("PanelTransition/VBoxTransition/DayTransiLabel:theme_override_font_sizes/font_size")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(1.7, 2, 2.15, 2.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [32, 20, 36, 34]
+}
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(2),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_set_day_to"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ptbfj"]
+_data = {
+&"RESET": SubResource("Animation_fifax"),
+&"intro": SubResource("Animation_ydqjb"),
+&"sun_cycle": SubResource("Animation_17phr")
+}
+
+[node name="DayTransition" type="Control" unique_id=1413845251]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_oakl5")
+
+[node name="CityBG" type="TextureRect" parent="." unique_id=457227830]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -295.0
+offset_top = -424.0
+offset_right = 362.0
+offset_bottom = 410.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_fifax")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Dimmer" type="ColorRect" parent="." unique_id=626842243]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.54901963)
+
+[node name="Sky" type="TextureRect" parent="." unique_id=629329431]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Moon" type="TextureRect" parent="." unique_id=950954826]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -146.0
+offset_right = 53.999756
+offset_bottom = 200.00073
+grow_vertical = 0
+texture = ExtResource("3_fifax")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PanelTransition" type="PanelContainer" parent="." unique_id=1483215102]
+modulate = Color(1, 1, 1, 0)
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -241.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="VBoxTransition" type="VBoxContainer" parent="PanelTransition" unique_id=1281710606]
+layout_mode = 2
+
+[node name="DayTransiLabel" type="Label" parent="PanelTransition/VBoxTransition" unique_id=1334291125]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Jour X"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="AvantagesTransi" type="VBoxContainer" parent="PanelTransition/VBoxTransition" unique_id=1692912741]
+layout_mode = 2
+
+[node name="SubtitleTransi" type="Label" parent="PanelTransition/VBoxTransition" unique_id=1678984430]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OkButton" type="TextureButton" parent="." unique_id=1999683634]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -88.0
+offset_top = -132.0
+offset_right = 85.5
+offset_bottom = -56.0
+grow_horizontal = 2
+grow_vertical = 0
+texture_normal = ExtResource("2_18qbf")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("3_oakl5")
+
+[node name="AnimationPlayerTransi" type="AnimationPlayer" parent="." unique_id=530875147]
+libraries/ = SubResource("AnimationLibrary_ptbfj")
