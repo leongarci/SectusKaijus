@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://c1j4888o8cidw"]
+
+[sub_resource type="GDScript" id="GDScript_11vox"]
+script/source = "extends Node2D
+
+# Signal pour remonter l'info au Main
+signal clic_mission(coords)
+
+var coord_grille : Vector2i
+
+# C'est cette fonction que Godot ne trouvait pas !
+func setup(coords: Vector2i):
+	coord_grille = coords
+
+# Cette fonction est connectée au signal \"pressed\" du BOUTON ENFANT
+func _on_button_pressed() -> void:
+	emit_signal(\"clic_mission\", coord_grille)
+"
+
+[node name="Node2D" type="Node2D" unique_id=1677744082]
+script = SubResource("GDScript_11vox")
+
+[node name="Button" type="Button" parent="." unique_id=279614944]
+offset_left = -118.0
+offset_top = -182.00002
+offset_right = -37.0
+offset_bottom = -128.00002
+scale = Vector2(3, 3)
+focus_mode = 0
+text = "Lancer mission"
+autowrap_mode = 2
+
+[connection signal="pressed" from="Button" to="Button" method="_on_button_pressed"]

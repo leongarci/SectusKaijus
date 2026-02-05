@@ -31,6 +31,9 @@ scale = Vector2(1, 1)
 [node name="Camera2D" parent="Main/TileMapLayer" index="0" unique_id=1822370931]
 zoom = Vector2(0.3, 0.3)
 
+[node name="ConteneurBoutonsMission" type="Node2D" parent="Main" unique_id=1747389012]
+unique_name_in_owner = true
+
 [node name="UI_mission" type="Control" parent="Main/CanvasLayer" parent_id_path=PackedInt32Array(851540061, 471304397) index="1" unique_id=1095418352]
 layout_mode = 3
 anchors_preset = 15
@@ -189,6 +192,32 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 auto_height = true
+
+[node name="FichePersoPopup" type="AcceptDialog" parent="UI" unique_id=2073664071]
+unique_name_in_owner = true
+
+[node name="VBoxContainerPerso" type="VBoxContainer" parent="UI/FichePersoPopup" unique_id=232478493]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LabelNom" type="Label" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=529129829]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=66555740]
+layout_mode = 2
+
+[node name="LabelBonus" type="Label" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=58413609]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LabelMalus1" type="Label" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=1978636167]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LabelMalus2" type="Label" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=1925178462]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="PopupResultat" type="AcceptDialog" parent="." unique_id=2090242370]
 unique_name_in_owner = true
