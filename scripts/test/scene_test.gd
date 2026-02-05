@@ -55,6 +55,13 @@ func _ready():
 
 	bouton_mission.hide()
 	
+	var configs_persos = {
+	"Clovis":  ["Hercule", "Nyctophobe", "Ignare"],      # Fort mais peur du noir et bête
+	"Lilou":   ["Fantôme", "Ailurophobe", "Faible"],     # Discrète mais peur des chats et faible
+	"Titouan": ["Erudit", "Claustrophobe", "Maladroit"], # Intelligent mais peur grottes et maladroit
+	"Julien":  ["Charmeur", "Athée", "Timide"],          # Charismatique mais refuse rituels et timide (paradoxe intéressant !)
+	"Karine":  ["Kleptomane", "Nyctophobe", "Ignare"]    # Voleuse mais peur noir et bête
+}
 	# Initialisation des personnages
 	var noms_cultistes = ["Clovis", "Lilou", "Titouan", "Julien", "Karine"]
 	for nom in noms_cultistes:
@@ -77,6 +84,9 @@ func _ready():
 			deck_container.add_child(nouvelle_carte)
 			nouvelle_carte.setup(p)
 			nouvelle_carte.carte_cliquee.connect(_on_selection_demandee)
+			if configs_persos.has(nom):
+				p.traits.assign(configs_persos[nom])
+				print(nom + " traits : " + str(p.traits))
 
 	label_info.text = "Secte prête. En attente d'ordres."
 	
@@ -299,6 +309,7 @@ func terminer_et_afficher_mission(perso):
 func _sur_fermeture_popup_echec_critique():
 	print("🚨 3 échecs atteints ! Fin de journée forcée.")
 	if nb_echecs_jour >= 3:
+		
 		forcer_passage_jour_suivant()
 
 # ==========================================
