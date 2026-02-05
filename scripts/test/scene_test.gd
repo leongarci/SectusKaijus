@@ -141,7 +141,7 @@ func _on_bouton_avancer_pressed():
 	if nouveau_jour > ancien_jour:
 		var nb_reussites = $Main/MissionManager.get_nombre_missions_reussies()
 		
-		if nb_reussites >= 1:
+		if nb_reussites >= 8:
 			declencher_fin_de_jeu("Le soleil se lève sur une victoire... " + str(nb_reussites) + " missions réussies !")
 			return # On arrête tout, on ne lance pas la transition jour
 		declencher_transition_nouveau_jour(ancien_jour, nouveau_jour)
