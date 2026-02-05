@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://ucy2pesihgyx" path="res://assets/ui/cards/karine.png" id="7_iq4jt"]
 [ext_resource type="PackedScene" uid="uid://bdm2pc1kcoqk3" path="res://scenes/map/map.tscn" id="8_dabsh"]
 [ext_resource type="Texture2D" uid="uid://bfw0p8hspwx8w" path="res://assets/ui/heuresuivante.png" id="12_pdn7u"]
+[ext_resource type="AudioStream" uid="uid://dp27r4lmwa0md" path="res://assets/music/musique kaiju.ogg" id="13_t8n8j"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_iq4jt"]
 font_size = 18
@@ -222,6 +223,10 @@ layout_mode = 2
 unique_name_in_owner = true
 
 [node name="ConteneurBoutonsMission" type="Node2D" parent="." unique_id=1645426194]
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=1060448407]
+stream = ExtResource("13_t8n8j")
+autoplay = true
 
 [connection signal="pressed" from="UI/BoutonAvancer" to="." method="_on_bouton_avancer_pressed"]
 

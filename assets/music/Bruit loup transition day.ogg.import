@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bc27wtdvmtoq"
+path="res://.godot/imported/Bruit loup transition day.ogg-d7ea0f2385238056061162396917f27d.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/music/Bruit loup transition day.ogg"
+dest_files=["res://.godot/imported/Bruit loup transition day.ogg-d7ea0f2385238056061162396917f27d.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://b1xcv2f7jsg08"
+path="res://.godot/imported/Bruit ouvrage quête.ogg-63031ee0ba4019927b52ae0912202482.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/music/Bruit ouvrage quête.ogg"
+dest_files=["res://.godot/imported/Bruit ouvrage quête.ogg-63031ee0ba4019927b52ae0912202482.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

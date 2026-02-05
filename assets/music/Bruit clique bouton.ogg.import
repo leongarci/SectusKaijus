@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cn8c3jydptqox"
+path="res://.godot/imported/Bruit clique bouton.ogg-7d2cad3945a9708cf7e1860c4ed0f41f.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/music/Bruit clique bouton.ogg"
+dest_files=["res://.godot/imported/Bruit clique bouton.ogg-7d2cad3945a9708cf7e1860c4ed0f41f.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

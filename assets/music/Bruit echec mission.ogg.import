@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bigrclhg450de"
+path="res://.godot/imported/Bruit echec mission.ogg-69a460d66ecd46a025f3633c18a3a5a5.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/music/Bruit echec mission.ogg"
+dest_files=["res://.godot/imported/Bruit echec mission.ogg-69a460d66ecd46a025f3633c18a3a5a5.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

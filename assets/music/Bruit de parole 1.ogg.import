@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://day2q8k6nxwt7"
+path="res://.godot/imported/Bruit de parole 1.ogg-42bcaa4d286e27742f8c62c831399231.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/music/Bruit de parole 1.ogg"
+dest_files=["res://.godot/imported/Bruit de parole 1.ogg-42bcaa4d286e27742f8c62c831399231.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
