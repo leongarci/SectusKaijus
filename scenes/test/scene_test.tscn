@@ -31,6 +31,9 @@ scale = Vector2(1, 1)
 [node name="Camera2D" parent="Main/TileMapLayer" index="0" unique_id=1822370931]
 zoom = Vector2(0.3, 0.3)
 
+[node name="ConteneurBoutonsMission" type="Node2D" parent="Main" unique_id=1747389012]
+unique_name_in_owner = true
+
 [node name="UI_mission" type="Control" parent="Main/CanvasLayer" parent_id_path=PackedInt32Array(851540061, 471304397) index="1" unique_id=1095418352]
 layout_mode = 3
 anchors_preset = 15

@@ -7,6 +7,9 @@ var scene_transition_jour = preload("res://scenes/ui/DayTransition.tscn")
 # --- VARIABLES ET NOEUDS ---
 @export var tile_map : TileMapLayer
 
+var scene_bouton_monde = preload("res://scenes/ui/BoutonMission.tscn")
+@onready var conteneur_boutons = $Main/ConteneurBoutonsMission
+
 @onready var label_info = $UI/MessageInfo
 @onready var deck_container = $UI/DeckContainer
 @onready var bouton_mission = %BoutonMission
@@ -99,6 +102,7 @@ func _ready():
 	await get_tree().process_frame
 	for p in personnages:
 		reorganiser_positions_sur_case(p.coord_actuelle)
+	actualiser_boutons_monde()
 
 # ==========================================
 # LOGIQUE DU TEMPS ET TRANSITION
@@ -175,6 +179,8 @@ func _on_bouton_avancer_pressed():
 	bouton_mission.hide()
 	chemin_visuel_actuel.clear()
 	personnage_selectionne = null
+	await get_tree().create_timer(0.5).timeout # Attendre que les persos arrivent
+	actualiser_boutons_monde()
 	queue_redraw()
 	
 	# 3. Mouvement
@@ -334,6 +340,7 @@ func _on_popup_mission_confirmed():
 		label_info.text = "Mission lancée !"
 		bouton_mission.hide()
 		personnage_selectionne = null
+		actualiser_boutons_monde()
 		actualiser_liste_missions_hud()
 
 func terminer_et_afficher_mission(perso):
@@ -435,7 +442,6 @@ func _on_selection_demandee(le_perso):
 	else:
 		personnage_selectionne = le_perso
 		label_info.text = "Destination pour " + le_perso.nom_personnage + " ?"
-		actualiser_visibilite_bouton_mission(le_perso)
 	
 	chemin_visuel_actuel.clear()
 	queue_redraw()
@@ -542,6 +548,38 @@ func declencher_fin_de_jeu(raison: String):
 		# Fallback vers le menu si la scène n'existe pas encore
 		get_tree().change_scene_to_file("res://scenes/menu.tscn")
 		
+func actualiser_boutons_monde():
+	# 1. On supprime les anciens boutons
+	for enfant in conteneur_boutons.get_children():
+		enfant.queue_free()
+	
+	# 2. On repère les cases occupées par des cultistes LIBRES
+	var cases_avec_cultiste = {}
+	for p in personnages:
+		if not p.est_occupe():
+			cases_avec_cultiste[p.coord_actuelle] = true
+			
+	# 3. Pour chaque case occupée, on regarde si une mission est dispo
+	for coords in cases_avec_cultiste.keys():
+		var lieu = get_nom_lieu(coords)
+		if lieu != "" and est_mission_disponible_ici(lieu):
+			# BINGO ! On affiche un bouton ici
+			creer_bouton_a(coords, lieu)
+
+func creer_bouton_a(coords: Vector2i, lieu: String):
+	var btn = scene_bouton_monde.instantiate()
+	conteneur_boutons.add_child(btn)
+	
+	# Positionnement : On convertit la grille en pixels monde
+	var pos_monde = tile_map.to_global(tile_map.map_to_local(coords))
+	btn.global_position = pos_monde + Vector2(0, -50)	
+	# Configuration
+	btn.setup(coords)
+	
+	# Connexion : Quand on clique, ça lance la popup
+	btn.clic_mission.connect(func(c): preparer_popup_mission(lieu, c))
+
+				
 func actualiser_liste_missions_hud():
 	# 1. On récupère le noeud de la liste (chemin basé sur ta scène)
 	# Si tu as activé le "Nom Unique" (%) sur cette liste dans l'éditeur, utilise %MissionList
@@ -578,3 +616,5 @@ func actualiser_liste_missions_hud():
 		else: # DISPONIBLE (Gris / Normal)
 			# Tu peux laisser transparent ou mettre un gris léger
 			pass
+			
+			
