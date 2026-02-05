@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://r6eihf632o21"]
+
+[ext_resource type="Script" uid="uid://roraijxdnqtj" path="res://scripts/ui/IrisTransition.gd" id="1_4u834"]
+[ext_resource type="Texture2D" uid="uid://b7dk2jtysw387" path="res://assets/ui/iris_mask.png" id="2_u6wsi"]
+
+[sub_resource type="Animation" id="Animation_gq5n2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Iris:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05)]
+}
+
+[sub_resource type="Animation" id="Animation_5u6sh"]
+resource_name = "close"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Iris:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.09, 0.09)]
+}
+
+[sub_resource type="Animation" id="Animation_h2dvm"]
+resource_name = "open"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Iris:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.09, 0.09), Vector2(1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_22d8s"]
+_data = {
+&"RESET": SubResource("Animation_gq5n2"),
+&"close": SubResource("Animation_5u6sh"),
+&"open": SubResource("Animation_h2dvm")
+}
+
+[node name="IrisTransition" type="CanvasLayer" unique_id=1140170994]
+script = ExtResource("1_4u834")
+
+[node name="Iris" type="TextureRect" parent="." unique_id=2097838220]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8448.0
+offset_top = -3516.0
+offset_right = 8333.0
+offset_bottom = 3515.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1e-05, 1e-05)
+pivot_offset = Vector2(8966.5, 3839.5)
+texture = ExtResource("2_u6wsi")
+expand_mode = 1
+
+[node name="AnimationPlayerIris" type="AnimationPlayer" parent="." unique_id=1735894924]
+libraries/ = SubResource("AnimationLibrary_22d8s")
