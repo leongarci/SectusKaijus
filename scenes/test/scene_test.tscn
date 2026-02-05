@@ -12,6 +12,10 @@
 [ext_resource type="Texture2D" uid="uid://ucy2pesihgyx" path="res://assets/ui/cards/karine.png" id="7_iq4jt"]
 [ext_resource type="PackedScene" uid="uid://bdm2pc1kcoqk3" path="res://scenes/map/map.tscn" id="8_dabsh"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_iq4jt"]
+font_size = 18
+font_color = Color(1, 1, 0, 1)
+
 [node name="Scene" type="Node2D" unique_id=53717244 node_paths=PackedStringArray("tile_map")]
 script = ExtResource("1_oqoec")
 tile_map = NodePath("Main/TileMapLayer")
@@ -33,6 +37,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("3_iq4jt")
 
 [node name="MissionPanel" type="PanelContainer" parent="Main/CanvasLayer/UI_mission" unique_id=266338806]
@@ -144,5 +149,46 @@ offset_right = 103.0
 offset_bottom = 33.0
 grow_horizontal = 2
 text = "Cliquez sur un personnage"
+
+[node name="BoutonMission" type="Button" parent="UI" unique_id=1687543881]
+unique_name_in_owner = true
+visible = false
+offset_left = 700.0
+offset_top = 538.0
+offset_right = 867.0
+offset_bottom = 569.0
+text = "🚩 LANCER MISSION"
+
+[node name="PopupMission" type="ConfirmationDialog" parent="UI" unique_id=1805251396]
+unique_name_in_owner = true
+title = "Mission disponible"
+initial_position = 2
+size = Vector2i(300, 250)
+ok_button_text = "Lancer la mission !"
+dialog_text = "Qui participe ?"
+cancel_button_text = "Plus tard"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/PopupMission" unique_id=825679226]
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="LabelChances" type="Label" parent="UI/PopupMission/VBoxContainer" unique_id=457865659]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Chances de succès : 0%"
+label_settings = SubResource("LabelSettings_iq4jt")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ListeChoixMissions" type="ItemList" parent="UI/PopupMission/VBoxContainer" unique_id=1343709607]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+auto_height = true
+
+[node name="PopupResultat" type="AcceptDialog" parent="." unique_id=2090242370]
+unique_name_in_owner = true
 
 [editable path="Main"]

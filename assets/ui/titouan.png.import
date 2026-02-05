@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d36rdw4kaem5m"
-path="res://.godot/imported/ok.png-368b5cb82b15e927d9f2c88dff7315e4.ctex"
+uid="uid://g6svakldn1ac"
+path="res://.godot/imported/titouan.png-1ab97a38daec8af6d7c8fd7331a4bce4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/ok.png"
-dest_files=["res://.godot/imported/ok.png-368b5cb82b15e927d9f2c88dff7315e4.ctex"]
+source_file="res://assets/ui/titouan.png"
+dest_files=["res://.godot/imported/titouan.png-1ab97a38daec8af6d7c8fd7331a4bce4.ctex"]
 
 [params]
 

@@ -34,7 +34,7 @@ func _refresh_missions() -> void:
 		var title: String = str(m["title"])
 
 		var place_text := "???"
-		if bool(m["done"]):
+		if bool(m["status"]!=0):
 			var revealed := str(m.get("revealed_place", ""))
 			if revealed != "":
 				place_text = revealed
@@ -42,8 +42,11 @@ func _refresh_missions() -> void:
 		var line := "%s  —  Lieu : %s" % [title, place_text]
 
 		# (optionnel) check visuel
-		if bool(m["done"]):
+		if bool(m["status"]==2):
 			line += " ✔"
+		else : 
+			if bool(m["status"]==3):
+				line += "❌"
 
 		mission_list.add_item(line)
 
