@@ -3,6 +3,8 @@ extends Node2D
 # --- PRÉCHARGEMENTS ---
 var scene_carte = preload("res://scenes/characters/carte_perso.tscn")
 var scene_transition_jour = preload("res://scenes/ui/DayTransition.tscn")
+var transition_overlay = preload("res://scenes/ui/TransitionOverlay.tscn")
+var scene_echec_transi = preload("res://scenes/ui/EchecTransiDay.tscn")
 
 # --- VARIABLES ET NOEUDS ---
 @export var tile_map : TileMapLayer
@@ -77,7 +79,7 @@ func _ready():
 			
 			# Positionnement initial
 			var local_pos = tile_map.to_local(p.global_position)
-			var case_depart = tile_map.local_to_map(local_pos)
+			var case_depart = coords_base
 			var centre_hex = tile_map.to_global(tile_map.map_to_local(case_depart))
 			p.initialiser_position(case_depart, centre_hex)
 			
@@ -153,24 +155,28 @@ func demarrer_nouvelle_journee():
 	queue_redraw()	
 	
 func _on_bouton_avancer_pressed():
-	# 1. Mise à jour du temps
-	var ancien_jour = $Main/TimeManager.day
+	# 1. On capture le jour AVANT
+	var ancien_jour = $Main/TimeManager.day 
+	
 	$Main/TimeManager.advance_hour()
 	heure_actuelle = $Main/TimeManager.hour
 	
-	var nouveau_jour = $Main/TimeManager.day
+	# 2. On capture le jour APRÈS
+	var nouveau_jour = $Main/TimeManager.day 
 	
 	# --- DÉTECTION DU CHANGEMENT DE JOUR ---
 	if nouveau_jour > ancien_jour:
-		declencher_transition_nouveau_jour(nouveau_jour)
+		# MODIFICATION : On envoie les deux variables
+		declencher_transition_nouveau_jour(ancien_jour, nouveau_jour)
+		
 		nb_echecs_jour = 0 
 		var nb_reussites = $Main/MissionManager.get_nombre_missions_reussies()
 		
 		if nb_reussites >= 8:
 			declencher_fin_de_jeu("Journée validée avec " + str(nb_reussites) + " succès !")
-			return # On arrête tout ici, pas besoin de déplacer les persos
+			return 
 		else:
-			print("Pas assez de succès (" + str(nb_reussites) + "/8). La partie continue (ou Game Over selon tes règles).")
+			print("La partie continue...")
 		demarrer_nouvelle_journee()
 	# ---------------------------------------
 	
@@ -206,43 +212,82 @@ func _on_bouton_avancer_pressed():
 	for case in cases_occupees:
 		reorganiser_positions_sur_case(case)
 
-func declencher_transition_nouveau_jour(numero_jour: int):
+func declencher_transition_nouveau_jour(jour_depart: int, jour_arrivee: int):
 	if scene_transition_jour:
 		var transition = scene_transition_jour.instantiate()
-		$UI.add_child(transition)
 		
+		# --- CORRECTION CRITIQUE ---
+		# 1. On configure les données (setup) D'ABORD
 		if transition.has_method("setup"):
-			# --- CORRECTION ICI : On caste le tableau vide en Array[String] ---
-			transition.setup(numero_jour - 1, numero_jour, [] as Array[String])
+			transition.setup(jour_depart, jour_arrivee, [] as Array[String])
 		elif transition.has_method("set_day"):
-			transition.set_day(numero_jour)
+			transition.set_day(jour_arrivee)
 			
-		print("🌅 Transition visuelle vers le Jour ", numero_jour)
+		# 2. ENSUITE on ajoute à l'arbre (ce qui lance _ready avec les bonnes valeurs)
+		$UI.add_child(transition)
+			
+		print("🌅 Transition visuelle : Jour ", jour_depart, " -> ", jour_arrivee)
+
+# Dans scene_test.gd
 
 func forcer_passage_jour_suivant():
-	# 1. Avance rapide
-	var jour_actuel = $Main/TimeManager.day
-	while $Main/TimeManager.day == jour_actuel:
+	print("🚨 SÉQUENCE DE REPLI DÉCLENCHÉE")
+	
+	# --- ÉTAPE 1 : TRANSITION OVERLAY (Le rideau noir) ---
+	var overlay_instance = null
+	if transition_overlay:
+		overlay_instance = transition_overlay.instantiate()
+		$UI.add_child(overlay_instance)
+		# Si ton overlay a une fonction pour faire un "fade in" (devenir noir), c'est le moment.
+		# Sinon, on suppose qu'il est noir par défaut ou qu'il a une animation auto.
+		
+		# Petit délai pour laisser le noir s'installer (0.5s ou 1s selon ton anim)
+		await get_tree().create_timer(0.5).timeout
+
+	# --- ÉTAPE 2 : ECHEC TRANSI DAY (Le drame) ---
+	if scene_echec_transi:
+		var echec_instance = scene_echec_transi.instantiate()
+		$UI.add_child(echec_instance) # On l'ajoute PAR DESSUS l'overlay
+		
+		# On attend la fin de l'animation d'échec (4 secondes)
+		await get_tree().create_timer(4.0).timeout
+		
+		# On nettoie l'écran d'échec
+		if is_instance_valid(echec_instance):
+			echec_instance.queue_free()
+	
+	# --- ÉTAPE 3 : CALCULS INVISIBLES ---
+	var jour_avant = $Main/TimeManager.day
+	
+	# Avance rapide jusqu'au lendemain
+	while $Main/TimeManager.day == jour_avant:
 		$Main/TimeManager.advance_hour()
 	
-	# 2. Nouvelles infos
 	heure_actuelle = $Main/TimeManager.hour
-	var nouveau_jour = $Main/TimeManager.day
+	var jour_apres = $Main/TimeManager.day
 	
-	# 3. Transition
-	var overlay = preload("res://scenes/ui/TransitionOverlay.tscn").instantiate()
-	get_tree().current_scene.add_child(overlay) 
-	overlay.transition_to(preload("res://scenes/ui/DayTransition.tscn"))
+	# --- ÉTAPE 4 : DAY TRANSITION (L'aube) ---
+	# On supprime d'abord l'overlay noir pour laisser la place à la transition jour
+	if is_instance_valid(overlay_instance):
+		overlay_instance.queue_free()
 	
-	# 4. Nettoyage
-	label_info.text = "Repli stratégique... Jour %d" % nouveau_jour
+	# On lance la transition jour (avec les bons numéros grâce au fix de l'étape 1)
+	declencher_transition_nouveau_jour(jour_avant, jour_apres)
+	
+	# --- ÉTAPE 5 : RESET DU JEU ---
+	demarrer_nouvelle_journee()
+	
+	# Nettoyage variables
+	label_info.text = "Repli stratégique... Jour %d" % jour_apres
 	bouton_mission.hide()
 	chemin_visuel_actuel.clear()
 	personnage_selectionne = null
-	queue_redraw()
-	
-	# 5. Reset échecs
 	nb_echecs_jour = 0
+	
+	# Mise à jour des boutons flottants
+	await get_tree().create_timer(0.1).timeout
+	actualiser_boutons_monde()
+	queue_redraw()
 
 # ==========================================
 # NAVIGATION ET ENTRÉES
@@ -365,7 +410,7 @@ func terminer_et_afficher_mission(perso):
 		popup_res.dialog_text += "\n\n(Attention : %d/3 échecs avant repli forcé)" % nb_echecs_jour
 
 	# --- DÉTECTION DU GAME OVER ---
-	if nb_echecs_jour >= 3:
+	if nb_echecs_jour >= 1:
 		if not popup_res.confirmed.is_connected(_sur_fermeture_popup_echec_critique):
 			popup_res.confirmed.connect(_sur_fermeture_popup_echec_critique, CONNECT_ONE_SHOT)
 			popup_res.canceled.connect(_sur_fermeture_popup_echec_critique, CONNECT_ONE_SHOT)
@@ -384,7 +429,7 @@ func terminer_et_afficher_mission(perso):
 
 func _sur_fermeture_popup_echec_critique():
 	print("🚨 3 échecs atteints ! Fin de journée forcée.")
-	if nb_echecs_jour >= 3:
+	if nb_echecs_jour >= 1:
 		
 		forcer_passage_jour_suivant()
 

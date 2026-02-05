@@ -174,6 +174,7 @@ cancel_button_text = "Plus tard"
 offset_right = 40.0
 offset_bottom = 40.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 10
 
 [node name="LabelChances" type="Label" parent="UI/PopupMission/VBoxContainer" unique_id=457865659]
@@ -192,6 +193,7 @@ auto_height = true
 
 [node name="FichePersoPopup" type="AcceptDialog" parent="UI" unique_id=2073664071]
 unique_name_in_owner = true
+title = ""
 
 [node name="VBoxContainerPerso" type="VBoxContainer" parent="UI/FichePersoPopup" unique_id=232478493]
 offset_right = 40.0

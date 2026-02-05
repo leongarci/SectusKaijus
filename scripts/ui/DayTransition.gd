@@ -9,6 +9,7 @@ signal confirmed(day_to: int)
 @onready var perks_box: VBoxContainer = $PanelTransition/VBoxTransition/AvantagesTransi
 @onready var ok_button: TextureButton = $OkButton
 
+
 var day_from: int = 1
 var day_to: int = 2
 var perks: Array[String] = []
