@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dkxyv48pj2kn0"]
 
-[ext_resource type="Script" path="res://scripts/ui/outro.gd" id="1_pbcje"]
+[ext_resource type="Script" uid="uid://bpptr3hfrdyts" path="res://scripts/ui/outro.gd" id="1_pbcje"]
 [ext_resource type="Texture2D" uid="uid://g6svakldn1ac" path="res://assets/ui/titouan.png" id="2_mo71e"]
 [ext_resource type="FontFile" uid="uid://ki71rasupmd0" path="res://assets/fonts/CourierPrime-Bold.ttf" id="3_4au3y"]
 [ext_resource type="Texture2D" uid="uid://b88pyd50q67bi" path="res://assets/ui/suite.png" id="4_hyaci"]
@@ -103,7 +103,7 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.056
 anchor_bottom = 0.075
-offset_right = 1444.488
-offset_bottom = 905.4
+offset_right = 1604.488
+offset_bottom = 972.4
 stream = ExtResource("6_pbcje")
 expand = true

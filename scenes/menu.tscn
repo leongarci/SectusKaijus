@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bbrcex2ec88x3" path="res://scenes/menu.gd" id="1_vjb58"]
 [ext_resource type="Texture2D" uid="uid://dcwukrf5hhlua" path="res://assets/ui/play.png" id="1_yqeox"]
+[ext_resource type="Texture2D" uid="uid://cynf5tp2nr07n" path="res://assets/ui/SECTUS.png" id="2_con2f"]
 
 [node name="EcranTitre" type="Control" unique_id=372636072]
 layout_mode = 3
@@ -11,6 +12,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_vjb58")
+
+[node name="background" type="TextureRect" parent="." unique_id=1160460199]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_con2f")
+expand_mode = 1
 
 [node name="PlayButton" type="TextureButton" parent="." unique_id=1554837620]
 layout_mode = 1

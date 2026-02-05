@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="SectusKaijus"
-run/main_scene="uid://c4ruw5jpewww3"
+run/main_scene="uid://h3ik1n63fmxr"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 

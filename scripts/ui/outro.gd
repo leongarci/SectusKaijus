@@ -6,7 +6,7 @@ var Outro = [
 	"Votre dévouement en tant que maître de cette secte est exemplaire",
 	"Vous avez su guider vos membres au travers des différentes missions",
 	"Il est désormais temps d'accomplir le rituel sacré afin de réveillez ANGRAK !!",
-	"Prenez votre vengeance sur cette vil... AAAAAAHHHHH"
+	"Prenez votre vengeance sur cette ville... On l'entend se réveiller."
 ]
 
 var etape_actuelle = 0

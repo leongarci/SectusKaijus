@@ -4,17 +4,23 @@ class_name MissionManager
 signal missions_changed
 
 var missions: Array = [
-	# SKILL : La compétence principale qui aide (et qui réagit aux traits)
-	{ "id": 1, "title": "Catnapper un chat", "places": ["SPA", "Parc"], "diff": 0.0, "duration": 2, "hours": [9, 18], "status": 0, "skill": "discretion" },
-	{ "id": 2, "title": "Kidnapper un gosse", "places": ["Ecole"], "diff": 0.0, "duration": 4, "hours": [8, 17], "status": 0, "skill": "force" },
-	{ "id": 3, "title": "Déterrer un OS", "places": ["Cimetiere"], "diff": 0.0, "duration": 3, "hours": [21, 5], "status": 0, "skill": "force" },
-	{ "id": 4, "title": "Récupérer une écaille", "places": ["Musée"], "diff": 0.0, "duration": 3, "hours": [10, 19], "status": 0, "skill": "savoir" },
+	# NIVEAU 1 (Facile - 80% de base)
 	{ "id": 5, "title": "Voler le repas", "places": ["Maison de retraite"], "diff": 0.0, "duration": 1, "hours": [11, 14], "status": 0, "skill": "vol" },
-	{ "id": 6, "title": "Sourire au Saule", "places": ["Parc"], "diff": 0.0, "duration": 5, "hours": [0, 24], "status": 0, "skill": "charisme" },
-	{ "id": 7, "title": "Livre ancien", "places": ["Bibliothèque"], "diff": 0.0, "duration": 3, "hours": [10, 18], "status": 0, "skill": "savoir" },
-	{ "id": 8, "title": "Danse sacrée", "places": ["Salle de sport"], "diff": 0.0, "duration": 2, "hours": [7, 21], "status": 0, "skill": "rituel" },
-	{ "id": 9, "title": "Trouver la grotte", "places": ["Grotte"], "diff": 0.0, "duration": 4, "hours": [0, 24], "status": 0, "skill": "orientation" },
-	{ "id": 10, "title": "Cérémonie finale", "places": ["Base"], "diff": 0.0, "duration": 4, "hours": [0, 4], "status": 0, "skill": "rituel" }
+	{ "id": 1, "title": "Catnapper un chat", "places": ["SPA", "Parc"], "diff": 0.1, "duration": 2, "hours": [9, 18], "status": 0, "skill": "discretion" }, # 70%
+
+	# NIVEAU 2 (Moyen - Demande un peu de compétence)
+	{ "id": 2, "title": "Kidnapper un gosse", "places": ["Ecole"], "diff": 0.3, "duration": 4, "hours": [8, 17], "status": 0, "skill": "force" }, # 50%
+	{ "id": 4, "title": "Récupérer une écaille", "places": ["Musée"], "diff": 0.3, "duration": 3, "hours": [10, 19], "status": 0, "skill": "savoir" }, # 50%
+	{ "id": 8, "title": "Danse sacrée", "places": ["Salle de sport"], "diff": 0.4, "duration": 2, "hours": [7, 21], "status": 0, "skill": "rituel" }, # 40%
+
+	# NIVEAU 3 (Difficile - Risque d'échec élevé sans le bon trait)
+	{ "id": 3, "title": "Déterrer un OS", "places": ["Cimetiere"], "diff": 0.5, "duration": 3, "hours": [21, 5], "status": 0, "skill": "force" }, # 30%
+	{ "id": 7, "title": "Livre ancien", "places": ["Bibliothèque"], "diff": 0.5, "duration": 3, "hours": [10, 18], "status": 0, "skill": "savoir" }, # 30%
+	
+	# NIVEAU 4 (Expert - Presque impossible sans bonus)
+	{ "id": 6, "title": "Sourire au Saule", "places": ["Parc"], "diff": 0.6, "duration": 5, "hours": [0, 24], "status": 0, "skill": "charisme" }, # 20%
+	{ "id": 9, "title": "Trouver la grotte", "places": ["Grotte"], "diff": 0.7, "duration": 4, "hours": [0, 24], "status": 0, "skill": "orientation" }, # 10%
+	{ "id": 10, "title": "Cérémonie finale", "places": ["Base"], "diff": 0.8, "duration": 4, "hours": [0, 4], "status": 0, "skill": "rituel" } # 0% (Besoin absolu de bonus)
 ]
 
 var database_traits = {
@@ -104,11 +110,17 @@ func verifier_condition_blocage(condition: String, mission: Dictionary) -> bool:
 	return false
 	
 func calculer_probabilite(mission, participants: Array) -> float:
-	var chance = 0.5 - mission.get("diff", 0.5)
+	# --- MODIFICATION PRINCIPALE ICI ---
+	# Ancien : 0.5 - diff (donc 50% si diff=0)
+	# Nouveau : 0.8 - diff (donc 80% si diff=0)
+	var chance_de_base = 0.8 
+	var chance = chance_de_base - mission.get("diff", 0.0)
+	# -----------------------------------
+	
 	var skill_requis = mission.get("skill", "")
 	
 	for p in participants:
-		chance += (p.competences.get(skill_requis, 0.0) / 2.0)
+		chance += (p.competences.get(skill_requis, 0.0) / 3.0)
 		
 		for nom_trait in p.traits:
 			if database_traits.has(nom_trait):
@@ -117,7 +129,7 @@ func calculer_probabilite(mission, participants: Array) -> float:
 				if (data["type"] == "bonus" or data["type"] == "malus_stat"):
 					if data["skill"] == "ANY" or data["skill"] == skill_requis:
 						chance += data["val"]
-						
+	
 	return clamp(chance, 0.05, 0.95)
 
 func calculer_resultat_final(mission, participants: Array) -> Dictionary:

@@ -50,7 +50,10 @@ func _ready():
 	%ListeChoixMissions.item_selected.connect(_on_mission_list_item_selected)
 	
 	if has_node("UI/BoutonAvancer"):
-		$UI/BoutonAvancer.pressed.connect(_on_bouton_avancer_pressed)
+		var btn_avancer = $UI/BoutonAvancer
+		# On vérifie SI ce n'est PAS déjà connecté avant de le faire
+		if not btn_avancer.pressed.is_connected(_on_bouton_avancer_pressed):
+			btn_avancer.pressed.connect(_on_bouton_avancer_pressed)
 
 	bouton_mission.hide()
 	
@@ -70,7 +73,7 @@ func _ready():
 			var p = get_node(nom)
 			personnages.append(p)
 			
-			# Positionnement initial
+			# Positionnment initial
 			var centre_hex = tile_map.to_global(tile_map.map_to_local(coords_base))
 			p.initialiser_position(coords_base, centre_hex)
 			
@@ -136,6 +139,11 @@ func _on_bouton_avancer_pressed():
 	var nouveau_jour = $Main/TimeManager.day
 	
 	if nouveau_jour > ancien_jour:
+		var nb_reussites = $Main/MissionManager.get_nombre_missions_reussies()
+		
+		if nb_reussites >= 1:
+			declencher_fin_de_jeu("Le soleil se lève sur une victoire... " + str(nb_reussites) + " missions réussies !")
+			return # On arrête tout, on ne lance pas la transition jour
 		declencher_transition_nouveau_jour(ancien_jour, nouveau_jour)
 		nb_echecs_jour = 0
 		demarrer_nouvelle_journee()
@@ -156,6 +164,51 @@ func _on_bouton_avancer_pressed():
 	await get_tree().create_timer(0.35).timeout
 	actualiser_boutons_monde()
 	reorganiser_toutes_les_cases()
+
+func declencher_fin_de_jeu(raison: String):
+	print("🎬 FIN DE LA PARTIE : " + raison)
+	
+	# 1. FIGER LE JEU
+	# On empêche le temps d'avancer pendant l'attente
+	if has_node("Main/TimeManager"):
+		$Main/TimeManager.set_process(false) # Ou stop() selon ton script
+	
+	# On empêche de cliquer sur d'autres trucs
+	if bouton_mission: bouton_mission.hide()
+	personnage_selectionne = null
+	
+	# 2. FEEDBACK VISUEL
+	# On affiche le message en gros au milieu (ou via ton label_info)
+	if label_info:
+		label_info.text = raison
+		# Petit effet flash jaune pour attirer l'attention
+		var tween = create_tween()
+		tween.tween_property(label_info, "modulate", Color.YELLOW, 0.2)
+		tween.tween_property(label_info, "modulate", Color.WHITE, 0.2)
+	
+	# 3. SON (Si tu as mis en place le système de son)
+	if has_node("Main") and $Main.has_method("jouer_son"):
+		# Si c'est une victoire (mot-clé "victoire" ou "succès" dans le texte)
+		if "victoire" in raison.to_lower() or "succès" in raison.to_lower() or "maître" in raison.to_lower():
+			$Main.jouer_son("succes")
+		else:
+			$Main.jouer_son("erreur") # Ou un son de game over
+	
+	# 4. ATTENTE DRAMATIQUE
+	# On laisse 3 secondes au joueur pour lire le message
+	await get_tree().create_timer(3.0).timeout
+	
+	# 5. CHARGEMENT DE LA SCÈNE DE FIN
+	var chemin_outro = "res://scenes/ui/outro.tscn"
+	
+	if ResourceLoader.exists(chemin_outro):
+		# ASTUCE : Si tu veux passer le texte "raison" à la scène suivante, 
+		# il faudrait un script Global (Autoload). 
+		# Pour l'instant, on charge juste la scène de fin.
+		get_tree().change_scene_to_file(chemin_outro)
+	else:
+		print("⚠️ Scène outro.tscn introuvable ! Retour au menu.")
+		get_tree().change_scene_to_file("res://scenes/menu.tscn")
 
 func reorganiser_toutes_les_cases():
 	var cases_occupees = []
@@ -285,11 +338,20 @@ func terminer_et_afficher_mission(perso):
 	var res = perso.resultat_secret
 	m["status"] = 2 if res.success else 3
 	actualiser_liste_missions_hud()
-
+	
+	var nb_reussites = $Main/MissionManager.get_nombre_missions_reussies()
+	var total = $Main/MissionManager.get_nombre_total_missions() # Devrait être 10
+	
+	if nb_reussites == total:
+		# On cache la popup de mission pour afficher directement la fin
+		%PopupResultat.hide()
+		declencher_fin_de_jeu("Grand Maître ! Toutes les missions (10/10) sont réussies !")
+		return # On arrête la fonction ici
+	
 	if not res.success: nb_echecs_jour += 1
 	
 	%PopupResultat.dialog_text = res.msg
-	if nb_echecs_jour >= 1:
+	if nb_echecs_jour >= 3:
 		%PopupResultat.confirmed.connect(_sur_fermeture_popup_echec_critique, CONNECT_ONE_SHOT)
 	%PopupResultat.popup_centered()
 	
@@ -409,5 +471,56 @@ func _nettoyer_checkboxes_participants():
 		if child is CheckBox: child.queue_free()
 
 func afficher_fiche_personnage(perso):
+	# 1. Titre
 	%LabelNom.text = "Fiche de " + perso.nom_personnage
+	
+	# 2. Préparation des variables
+	var bonus_trouve = "Bonus : ???"
+	var malus_list = []
+	
+	# On récupère la base de données des traits depuis le MissionManager
+	var db = $Main/MissionManager.database_traits
+	
+	# 3. Parcours des traits du personnage
+	for trait_nom in perso.traits:
+		# On vérifie si le joueur a déjà découvert ce trait (via succès/échec précédent)
+		# Si 'traits_decouverts' n'existe pas encore dans ton script perso, mets 'true' pour tester.
+		var est_revele = (trait_nom in perso.traits_decouverts) 
+		
+		var texte_affiche = "???"
+		if est_revele:
+			texte_affiche = trait_nom
+		
+		# On regarde dans la DB si c'est un Bonus ou un Malus
+		if db.has(trait_nom):
+			if db[trait_nom]["type"] == "bonus":
+				bonus_trouve = "Bonus : " + texte_affiche
+			else:
+				# C'est un malus (bloquant ou stat)
+				malus_list.append("Défaut : " + texte_affiche)
+	
+	# 4. Remplissage des Labels dans la Popup
+	
+	# --- BONUS ---
+	%LabelBonus.text = bonus_trouve
+	# Vert si découvert, Blanc si mystère
+	%LabelBonus.modulate = Color.GREEN if "?" not in bonus_trouve else Color.WHITE
+	
+	# --- MALUS 1 ---
+	if malus_list.size() > 0:
+		%LabelMalus1.text = malus_list[0]
+		%LabelMalus1.modulate = Color.ORANGE_RED if "?" not in malus_list[0] else Color.WHITE
+	else:
+		%LabelMalus1.text = "-"
+		%LabelMalus1.modulate = Color.WHITE
+		
+	# --- MALUS 2 ---
+	if malus_list.size() > 1:
+		%LabelMalus2.text = malus_list[1]
+		%LabelMalus2.modulate = Color.ORANGE_RED if "?" not in malus_list[1] else Color.WHITE
+	else:
+		%LabelMalus2.text = "-"
+		%LabelMalus2.modulate = Color.WHITE
+		
+	# 5. Ouverture de la fenêtre
 	%FichePersoPopup.popup_centered()
