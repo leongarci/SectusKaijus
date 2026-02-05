@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://b7lux567d2t7k" path="res://assets/ui/cards/clovis.png" id="6_y0upk"]
 [ext_resource type="Texture2D" uid="uid://ucy2pesihgyx" path="res://assets/ui/cards/karine.png" id="7_iq4jt"]
 [ext_resource type="PackedScene" uid="uid://bdm2pc1kcoqk3" path="res://scenes/map/map.tscn" id="8_dabsh"]
+[ext_resource type="Texture2D" uid="uid://bfw0p8hspwx8w" path="res://assets/ui/heuresuivante.png" id="12_pdn7u"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_iq4jt"]
 font_size = 18
@@ -114,20 +115,21 @@ texture_carte = ExtResource("7_iq4jt")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=838043804]
 
-[node name="BoutonAvancer" type="Button" parent="UI" unique_id=244271444]
+[node name="BoutonAvancer" type="TextureButton" parent="UI" unique_id=1738703814]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -263.0
-offset_top = -110.0
-offset_right = -101.0
-offset_bottom = -48.0
+offset_left = -328.0
+offset_top = -196.0
+offset_right = -100.0
+offset_bottom = -111.0
 grow_horizontal = 0
 grow_vertical = 0
-text = "Avancer d'une heure"
-autowrap_mode = 2
+texture_normal = ExtResource("12_pdn7u")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="DeckContainer" type="HBoxContainer" parent="UI" unique_id=177772946]
 anchors_preset = 12
@@ -190,5 +192,7 @@ auto_height = true
 
 [node name="PopupResultat" type="AcceptDialog" parent="." unique_id=2090242370]
 unique_name_in_owner = true
+
+[connection signal="pressed" from="UI/BoutonAvancer" to="." method="_on_bouton_avancer_pressed"]
 
 [editable path="Main"]
