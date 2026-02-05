@@ -182,6 +182,12 @@ label_settings = SubResource("LabelSettings_iq4jt")
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="ListeChoixMissions" type="ItemList" parent="UI/PopupMission/VBoxContainer" unique_id=1343709607]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+auto_height = true
+
 [node name="PopupResultat" type="AcceptDialog" parent="." unique_id=2090242370]
 unique_name_in_owner = true
 

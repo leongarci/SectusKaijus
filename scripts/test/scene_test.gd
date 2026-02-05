@@ -27,7 +27,10 @@ func _ready():
 		return
 	construire_graphe_astar()
 	bouton_mission.pressed.connect(_on_bouton_mission_pressed)
+	%PopupMission.confirmed.connect(_on_popup_mission_confirmed)
 	bouton_mission.hide() # Caché au départ
+	if not %ListeChoixMissions.item_selected.is_connected(_on_mission_list_item_selected):
+		%ListeChoixMissions.item_selected.connect(_on_mission_list_item_selected)
 	var noms_puants = ["Clovis", "Lilou", "Titouan", "Julien", "Karine"]
 	for nom in noms_puants:
 		if has_node(nom):
@@ -119,6 +122,15 @@ func dessiner_hexagone(centre: Vector2, couleur: Color):
 
 
 func _on_selection_demandee(le_perso):
+	# AJOUT : Vérification si le personnage est occupé
+	if le_perso.est_occupe():
+		label_info.text = le_perso.nom_personnage + " est en mission (" + str(le_perso.temps_mission_restant) + "h restantes)."
+		# On désélectionne le personnage actuel s'il y en avait un
+		personnage_selectionne = null
+		chemin_visuel_actuel.clear()
+		queue_redraw()
+		return # On arrête la fonction ici, le perso ne sera pas sélectionné
+		
 	personnage_selectionne = le_perso
 	chemin_visuel_actuel.clear()
 	update_visuel_carte(le_perso, false)
@@ -212,49 +224,91 @@ func _actualiser_affichage_chances():
 	var label = vbox.get_node("LabelChances")
 	label.text = "Chances de succès : " + str(snapped(proba * 100, 1)) + "%"
 
+var missions_locales_dispo = []
+
 func preparer_popup_mission(lieu_nom: String, coords: Vector2i):
-	print("Recherche de mission pour : ", lieu_nom)
-	mission_en_attente = null
+	print("Recherche de missions pour : ", lieu_nom)
 	
-	# Utilisation de %MissionManager pour être cohérent
+	# 1. On nettoie les anciennes données
+	missions_locales_dispo.clear()
+	var liste = $UI/PopupMission/VBoxContainer.get_node("ListeChoixMissions")
+	liste.clear()
+	_nettoyer_checkboxes_participants()
+	$UI/PopupMission/VBoxContainer/LabelChances.text = "Sélectionnez une mission..."
+	%PopupMission.get_ok_button().disabled = true # On désactive le bouton tant qu'on a pas choisi
+	
+	# 2. On cherche TOUTES les missions disponibles (pas de 'break' après la première)
 	for m in $Main/MissionManager.missions:
-		# CORRECTION ICI : On cherche la mission avec status == 0 (Disponible)
 		if m["status"] == 0 and lieu_nom in m["places"]:
-			mission_en_attente = m
-			break
+			# Vérification horaire
+			if is_hour_in_range(heure_actuelle, m["hours"]):
+				missions_locales_dispo.append(m)
 	
-	if mission_en_attente == null:
-		print("❌ Aucune mission disponible avec status 0 à cet endroit.")
+	if missions_locales_dispo.size() == 0:
+		print("❌ Aucune mission disponible ici et maintenant.")
 		return
 
-	print("✅ Mission trouvée : ", mission_en_attente["title"])
-
-	var popup = %PopupMission
-	var vbox = popup.get_node("VBoxContainer")
+	# 3. On remplit la liste visuelle
+	for m in missions_locales_dispo:
+		%ListeChoixMissions.add_item(m["title"] + " (" + str(m["duration"]) + "h)")
 	
-	# Nettoyage
-	for child in vbox.get_children():
-		if child is CheckBox:
-			child.queue_free()
+	# 4. On stocke les coordonnées pour plus tard (pour filtrer les cultistes)
+	# On peut les stocker dans une variable de script ou en méta sur la popup
+	%PopupMission.set_meta("coords_actuelles", coords)
+
+	%PopupMission.title = "Missions à : " + lieu_nom
+	%PopupMission.popup_centered()
+	
+
+func _on_mission_list_item_selected(index):
+	# On récupère la mission correspondant à l'index cliqué
+	mission_en_attente = missions_locales_dispo[index]
+	
+	# Mise à jour UI
+	%PopupMission.get_ok_button().disabled = false
+	$Main/CanvasLayer/UI_mission/MissionPanel/MissionBox/MissionTitle.text = mission_en_attente["title"]
+	$Main/CanvasLayer/UI_mission/MissionPanel/MissionBox/MissionHint.text = "Difficulté : " + str(mission_en_attente.get("diff", 0.5) * 100) + "%"
+	
+	# On affiche les cultistes
+	var coords = %PopupMission.get_meta("coords_actuelles")
+	_generer_choix_cultistes(coords)
+	_actualiser_affichage_chances()
+
+func _generer_choix_cultistes(coords: Vector2i):
+	_nettoyer_checkboxes_participants()
 	
 	cultistes_sur_le_lieu.clear()
+	var vbox = %PopupMission.get_node("VBoxContainer")
+	
+	# On cherche les cultistes sur la case ET qui ne sont PAS occupés
 	for p in personnages:
 		if p.coord_actuelle == coords and not p.est_occupe():
 			cultistes_sur_le_lieu.append(p)
-	
-	for c in cultistes_sur_le_lieu:
-		var check = CheckBox.new()
-		check.text = c.nom_personnage
-		check.set_meta("perso", c)
-		check.toggled.connect(func(_toggled): _actualiser_affichage_chances())
-		vbox.add_child(check)
-	
-	popup.title = "Mission : " + mission_en_attente["title"]
-	_actualiser_affichage_chances()
-	popup.popup_centered()
-	print("🚀 Popup affichée !")
-	
+			
+	if cultistes_sur_le_lieu.is_empty():
+		var label = Label.new()
+		label.text = "Aucun cultiste disponible ici."
+		vbox.add_child(label)
+		%PopupMission.get_ok_button().disabled = true
+	else:
+		for c in cultistes_sur_le_lieu:
+			var check = CheckBox.new()
+			check.text = c.nom_personnage
+			check.set_meta("perso", c)
+			check.toggled.connect(func(_toggled): _actualiser_affichage_chances())
+			vbox.add_child(check)
+
+func _nettoyer_checkboxes_participants():
+	var vbox = %PopupMission.get_node("VBoxContainer")
+	for child in vbox.get_children():
+		if child is CheckBox or (child is Label and child.name != "LabelChances"):
+			pass 
+	for child in vbox.get_children():
+		if child is CheckBox:
+			child.queue_free()
+
 func _on_popup_mission_confirmed():
+	print("📢 Confirmation reçue ! Traitement de la mission...") # Debug
 	var participants = []
 	var vbox = %PopupMission.get_node("VBoxContainer")
 	for child in vbox.get_children():
@@ -262,19 +316,23 @@ func _on_popup_mission_confirmed():
 			participants.append(child.get_meta("perso"))
 	
 	if participants.size() > 0:
-		# 1. On calcule le résultat MAINTENANT mais on le garde secret
-		var resultat = %MissionManager.calculer_resultat_final(mission_en_attente, participants)
+		# 1. Calcul immédiat
+		var resultat = $Main/MissionManager.calculer_resultat_final(mission_en_attente, participants)
 		
-		# 2. On verrouille la mission et les cultistes
+		# 2. Verrouillage de la mission
 		mission_en_attente["status"] = 1 # "En cours"
 		
+		# 3. Verrouillage des cultistes
 		for p in participants:
 			p.temps_mission_restant = mission_en_attente["duration"]
 			p.mission_actuelle_data = mission_en_attente
-			p.resultat_secret = resultat # Le cultiste connaît l'issue, mais pas le joueur
+			p.resultat_secret = resultat
+			# On met à jour le visuel de leur carte (pour montrer qu'ils travaillent)
+			update_visuel_carte(p, false)
 			
-		label_info.text = "Mission lancée. Revenez dans " + str(mission_en_attente["duration"]) + "h."
+		label_info.text = "Mission '" + mission_en_attente["title"] + "' lancée !"
 		bouton_mission.hide()
+		personnage_selectionne = null # On désélectionne pour éviter les bugs
 
 # Helper pour gérer le passage de minuit dans les horaires
 func is_hour_in_range(h, range_arr):
@@ -322,20 +380,21 @@ func terminer_et_afficher_mission(perso):
 	var m = perso.mission_actuelle_data
 	var res = perso.resultat_secret
 	
-	# 1. On marque le statut définitif dans le manager
-	if res.success:
-		m["status"] = 2 # Réussie
-	else:
-		m["status"] = 3 # Échouée
+	print("🔔 Fin de mission pour ", perso.nom_personnage)
+
+	# 1. On change le statut final dans le manager
+	m["status"] = 2 if res.success else 3
 	
-	# 2. On affiche la popup de résultat
-	%PopupResultat.title = "Rapport de mission"
-	%PopupResultat.dialog_text = res.msg
-	%PopupResultat.popup_centered()
+	# 2. On affiche la popup
+	var popup_res = %PopupResultat
+	popup_res.title = "Rapport : " + m["title"]
+	popup_res.dialog_text = res.msg
+	popup_res.popup_centered()
 	
-	# 3. On nettoie le personnage
+	# 3. Nettoyage du perso
 	perso.mission_actuelle_data = null
 	perso.resultat_secret = {}
+	update_visuel_carte(perso, false)
 
 func update_visuel_carte(perso, a_un_ordre: bool):
 	for carte in deck_container.get_children():
