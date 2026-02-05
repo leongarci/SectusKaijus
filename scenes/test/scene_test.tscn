@@ -190,8 +190,36 @@ custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 auto_height = true
 
+[node name="FichePersoPopup" type="AcceptDialog" parent="UI" unique_id=2073664071]
+unique_name_in_owner = true
+
+[node name="VBoxContainerPerso" type="VBoxContainer" parent="UI/FichePersoPopup" unique_id=232478493]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LabelNom" type="Label" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=529129829]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=66555740]
+layout_mode = 2
+
+[node name="LabelBonus" type="Label" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=58413609]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LabelMalus1" type="Label" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=1978636167]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LabelMalus2" type="Label" parent="UI/FichePersoPopup/VBoxContainerPerso" unique_id=1925178462]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="PopupResultat" type="AcceptDialog" parent="." unique_id=2090242370]
 unique_name_in_owner = true
+
+[node name="ConteneurBoutonsMission" type="Node2D" parent="." unique_id=1645426194]
 
 [connection signal="pressed" from="UI/BoutonAvancer" to="." method="_on_bouton_avancer_pressed"]
 

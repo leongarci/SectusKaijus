@@ -1,12 +1,27 @@
 extends Button
 
 signal carte_cliquee(le_perso)
+signal demande_fiche(perso)
 
 var perso_reference = null
 var a_un_ordre_valide : bool = false
 
 # Tu peux changer cette valeur pour grossir/rétrécir tes cartes
 const LARGEUR_VOULUE = 120.0 
+
+
+func _gui_input(event):
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			# Comportement actuel (Sélection)
+			carte_cliquee.emit(perso_reference)
+			
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			# NOUVEAU : Demande d'affichage de la fiche
+			# On va utiliser un signal ou appeler une méthode parente
+			# Le plus simple ici est d'émettre le signal aussi, mais de gérer la différence dans scene_test
+			# Mais pour faire propre, ajoutons un signal dédié :
+			emit_signal("demande_fiche", perso_reference)
 
 func setup(perso_a_lier):
 	perso_reference = perso_a_lier
