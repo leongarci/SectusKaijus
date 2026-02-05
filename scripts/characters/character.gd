@@ -30,6 +30,14 @@ func _ready():
 		if not $Area2D.input_event.is_connected(_on_area_2d_input_event):
 			$Area2D.input_event.connect(_on_area_2d_input_event)
 
+var traits_decouverts: Array = []
+
+func reveler_trait(nom_trait: String):
+	if not traits_decouverts.has(nom_trait) and nom_trait in traits:
+		traits_decouverts.append(nom_trait)
+		print("💡 DÉCOUVERTE : " + nom_trait + " est désormais connu pour " + nom_personnage)
+		# Ici tu pourras ajouter un petit effet visuel ou sonore plus tard
+
 func initialiser_position(case_grille: Vector2i, position_monde: Vector2):
 	coord_actuelle = case_grille
 	global_position = position_monde

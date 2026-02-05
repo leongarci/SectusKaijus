@@ -5,16 +5,16 @@ signal missions_changed
 
 var missions: Array = [
 	# SKILL : La compétence principale qui aide (et qui réagit aux traits)
-	{ "id": 1, "title": "Catnapper un chat", "places": ["SPA", "Parc"], "diff": 0.4, "duration": 2, "hours": [9, 18], "status": 0, "skill": "discretion" },
-	{ "id": 2, "title": "Kidnapper un gosse", "places": ["Ecole"], "diff": 0.9, "duration": 4, "hours": [8, 17], "status": 0, "skill": "force" },
-	{ "id": 3, "title": "Déterrer un OS", "places": ["Cimetiere"], "diff": 0.5, "duration": 3, "hours": [21, 5], "status": 0, "skill": "force" },
-	{ "id": 4, "title": "Récupérer une écaille", "places": ["Musée"], "diff": 0.6, "duration": 3, "hours": [10, 19], "status": 0, "skill": "savoir" },
-	{ "id": 5, "title": "Voler le repas", "places": ["Maison de retraite"], "diff": 0.2, "duration": 1, "hours": [11, 14], "status": 0, "skill": "vol" },
-	{ "id": 6, "title": "Sourire au Saule", "places": ["Parc"], "diff": 0.3, "duration": 5, "hours": [0, 24], "status": 0, "skill": "charisme" },
-	{ "id": 7, "title": "Livre ancien", "places": ["Bibliothèque"], "diff": 0.7, "duration": 3, "hours": [10, 18], "status": 0, "skill": "savoir" },
-	{ "id": 8, "title": "Danse sacrée", "places": ["Salle de sport"], "diff": 0.2, "duration": 2, "hours": [7, 21], "status": 0, "skill": "rituel" },
-	{ "id": 9, "title": "Trouver la grotte", "places": ["Grotte"], "diff": 0.4, "duration": 4, "hours": [0, 24], "status": 0, "skill": "orientation" },
-	{ "id": 10, "title": "Cérémonie finale", "places": ["Base"], "diff": 0.8, "duration": 4, "hours": [0, 4], "status": 0, "skill": "rituel" }
+	{ "id": 1, "title": "Catnapper un chat", "places": ["SPA", "Parc"], "diff": 0.0, "duration": 2, "hours": [9, 18], "status": 0, "skill": "discretion" },
+	{ "id": 2, "title": "Kidnapper un gosse", "places": ["Ecole"], "diff": 0.0, "duration": 4, "hours": [8, 17], "status": 0, "skill": "force" },
+	{ "id": 3, "title": "Déterrer un OS", "places": ["Cimetiere"], "diff": 0.0, "duration": 3, "hours": [21, 5], "status": 0, "skill": "force" },
+	{ "id": 4, "title": "Récupérer une écaille", "places": ["Musée"], "diff": 0.0, "duration": 3, "hours": [10, 19], "status": 0, "skill": "savoir" },
+	{ "id": 5, "title": "Voler le repas", "places": ["Maison de retraite"], "diff": 0.0, "duration": 1, "hours": [11, 14], "status": 0, "skill": "vol" },
+	{ "id": 6, "title": "Sourire au Saule", "places": ["Parc"], "diff": 0.0, "duration": 5, "hours": [0, 24], "status": 0, "skill": "charisme" },
+	{ "id": 7, "title": "Livre ancien", "places": ["Bibliothèque"], "diff": 0.0, "duration": 3, "hours": [10, 18], "status": 0, "skill": "savoir" },
+	{ "id": 8, "title": "Danse sacrée", "places": ["Salle de sport"], "diff": 0.0, "duration": 2, "hours": [7, 21], "status": 0, "skill": "rituel" },
+	{ "id": 9, "title": "Trouver la grotte", "places": ["Grotte"], "diff": 0.0, "duration": 4, "hours": [0, 24], "status": 0, "skill": "orientation" },
+	{ "id": 10, "title": "Cérémonie finale", "places": ["Base"], "diff": 0.0, "duration": 4, "hours": [0, 4], "status": 0, "skill": "rituel" }
 ]
 
 var database_traits = {
@@ -81,6 +81,16 @@ var database_traits = {
 	}
 }
 
+func get_nombre_missions_reussies() -> int:
+	var compteur = 0
+	for m in missions:
+		if m["status"] == 2: # 2 = RÉUSSIE
+			compteur += 1
+	return compteur
+
+func get_nombre_total_missions() -> int:
+	return missions.size()
+
 func verifier_condition_blocage(condition: String, mission: Dictionary) -> bool:
 	if condition == "NUIT":
 		var debut = mission["hours"][0]
@@ -111,46 +121,45 @@ func calculer_probabilite(mission, participants: Array) -> float:
 	return clamp(chance, 0.05, 0.95)
 
 func calculer_resultat_final(mission, participants: Array) -> Dictionary:
-	# 1. Vérification des BLOQUANTS (Défaite immédiate)
+	# 1. BLOQUANTS
 	for p in participants:
 		for nom_trait in p.traits:
 			if database_traits.has(nom_trait):
 				var data = database_traits[nom_trait]
 				if data["type"] == "bloquant":
 					if verifier_condition_blocage(data["condition"], mission):
-						# On formate le message avec le nom du perso
-						var msg = data["msg_fail"] % p.nom_personnage
-						return {"success": false, "msg": msg}
+						# --- AJOUT : ON RÉVÈLE LE TRAIT COUPABLE ---
+						p.reveler_trait(nom_trait) 
+						return {"success": false, "msg": data["msg_fail"] % p.nom_personnage}
 
-	# 2. Calcul proba (Stats + Bonus/Malus mathématiques)
+	# 2. PROBA & TIRAGE
 	var proba = calculer_probabilite(mission, participants)
-	print("Probabilité : ", proba)
-	
-	# 3. Tirage
 	var success = randf() < proba
 	var message_final = ""
 	
 	if success:
 		message_final = "SUCCÈS : " + mission["title"] + " accomplie !"
-		# On cherche si un BONUS a aidé pour ajouter du flavor text
 		for p in participants:
 			for nom_trait in p.traits:
 				if database_traits.has(nom_trait):
 					var data = database_traits[nom_trait]
-					# Si c'est un bonus utile pour cette mission
+					# Si c'est un BONUS qui a aidé
 					if data["type"] == "bonus" and (data["skill"] == mission["skill"] or data["skill"] == "ANY"):
 						message_final += "\n" + (data["msg_win"] % p.nom_personnage)
-						break # Un seul message bonus suffit pour pas spammer
+						# --- AJOUT : ON RÉVÈLE LE BONUS ---
+						p.reveler_trait(nom_trait)
+						break 
 	else:
 		message_final = "ÉCHEC : La mission " + mission["title"] + " a raté..."
-		# On cherche si un MALUS a causé la perte
 		for p in participants:
 			for nom_trait in p.traits:
 				if database_traits.has(nom_trait):
 					var data = database_traits[nom_trait]
-					# Si c'est un malus qui a réduit les chances
+					# Si c'est un MALUS qui a gêné
 					if data["type"] == "malus_stat" and (data["skill"] == mission["skill"]):
 						message_final += "\n" + (data["msg_fail"] % p.nom_personnage)
+						# --- AJOUT : ON RÉVÈLE LE MALUS ---
+						p.reveler_trait(nom_trait)
 						break 
 						
 	return {"success": success, "msg": message_final}

@@ -27,6 +27,8 @@ var mission_en_attente = null
 var missions_locales_dispo = []
 var cultistes_sur_le_lieu = []
 
+var coords_base : Vector2i = Vector2i.ZERO
+
 # ==========================================
 # INITIALISATION
 # ==========================================
@@ -64,6 +66,7 @@ func _ready():
 }
 	# Initialisation des personnages
 	var noms_cultistes = ["Clovis", "Lilou", "Titouan", "Julien", "Karine"]
+	trouver_la_base()
 	for nom in noms_cultistes:
 		if has_node(nom):
 			var p = get_node(nom)
@@ -84,12 +87,15 @@ func _ready():
 			deck_container.add_child(nouvelle_carte)
 			nouvelle_carte.setup(p)
 			nouvelle_carte.carte_cliquee.connect(_on_selection_demandee)
+			if not nouvelle_carte.has_user_signal("demande_fiche"):
+				nouvelle_carte.add_user_signal("demande_fiche") # Sécurité si tu n'as pas modifié le script
+			nouvelle_carte.demande_fiche.connect(afficher_fiche_personnage)
 			if configs_persos.has(nom):
 				p.traits.assign(configs_persos[nom])
 				print(nom + " traits : " + str(p.traits))
 
 	label_info.text = "Secte prête. En attente d'ordres."
-	
+	actualiser_liste_missions_hud()
 	await get_tree().process_frame
 	for p in personnages:
 		reorganiser_positions_sur_case(p.coord_actuelle)
@@ -97,7 +103,51 @@ func _ready():
 # ==========================================
 # LOGIQUE DU TEMPS ET TRANSITION
 # ==========================================
-
+func trouver_la_base():
+	var cells = tile_map.get_used_cells()
+	for cell in cells:
+		if get_nom_lieu(cell) == "Base": # Assure-toi que ta tuile a bien la Custom Data "Base"
+			coords_base = cell
+			print("🏠 Base trouvée aux coordonnées : ", coords_base)
+			return
+	print("⚠️ ATTENTION : Aucune tuile avec le nom 'Base' n'a été trouvée !")
+	
+func demarrer_nouvelle_journee():
+	print("🔄 --- NOUVELLE JOURNÉE : RESET ---")
+	
+	# 1. Reset des Missions
+	for m in $Main/MissionManager.missions:
+		m["status"] = 0 # On remet tout à "Disponible"
+	actualiser_liste_missions_hud() # On met à jour l'affichage (tout redevient gris/neutre)
+	
+	# 2. Rapatriement des Cultistes
+	if coords_base != Vector2i.ZERO:
+		var pos_monde_base = tile_map.to_global(tile_map.map_to_local(coords_base))
+		
+		for p in personnages:
+			# On annule tout ce qu'ils faisaient
+			p.temps_mission_restant = 0
+			p.mission_actuelle_data = null
+			p.resultat_secret = {}
+			p.chemin_a_parcourir.clear()
+			
+			# Téléportation logique
+			p.coord_actuelle = coords_base
+			
+			# Téléportation visuelle (Tween rapide)
+			var tween = create_tween()
+			tween.tween_property(p, "global_position", pos_monde_base, 0.5).set_trans(Tween.TRANS_CUBIC)
+			
+			update_visuel_carte(p, false)
+			
+		# On attend un peu que le mouvement finisse pour réorganiser le cercle
+		await get_tree().create_timer(0.6).timeout
+		reorganiser_positions_sur_case(coords_base)
+	
+	personnage_selectionne = null
+	chemin_visuel_actuel.clear()
+	queue_redraw()	
+	
 func _on_bouton_avancer_pressed():
 	# 1. Mise à jour du temps
 	var ancien_jour = $Main/TimeManager.day
@@ -110,8 +160,16 @@ func _on_bouton_avancer_pressed():
 	if nouveau_jour > ancien_jour:
 		declencher_transition_nouveau_jour(nouveau_jour)
 		nb_echecs_jour = 0 
+		var nb_reussites = $Main/MissionManager.get_nombre_missions_reussies()
+		
+		if nb_reussites >= 8:
+			declencher_fin_de_jeu("Journée validée avec " + str(nb_reussites) + " succès !")
+			return # On arrête tout ici, pas besoin de déplacer les persos
+		else:
+			print("Pas assez de succès (" + str(nb_reussites) + "/8). La partie continue (ou Game Over selon tes règles).")
+		demarrer_nouvelle_journee()
 	# ---------------------------------------
-
+	
 	# 2. Nettoyage
 	label_info.text = "Heure : %02dh | Jour : %d" % [heure_actuelle, nouveau_jour]
 	bouton_mission.hide()
@@ -276,6 +334,7 @@ func _on_popup_mission_confirmed():
 		label_info.text = "Mission lancée !"
 		bouton_mission.hide()
 		personnage_selectionne = null
+		actualiser_liste_missions_hud()
 
 func terminer_et_afficher_mission(perso):
 	var m = perso.mission_actuelle_data
@@ -283,6 +342,7 @@ func terminer_et_afficher_mission(perso):
 	
 	m["status"] = 2 if res.success else 3
 	
+	actualiser_liste_missions_hud()
 	# --- LOGIQUE D'ÉCHEC ---
 	if not res.success:
 		nb_echecs_jour += 1
@@ -305,6 +365,13 @@ func terminer_et_afficher_mission(perso):
 	
 	perso.mission_actuelle_data = null
 	update_visuel_carte(perso, false)
+	var nb_reussites = $Main/MissionManager.get_nombre_missions_reussies()
+	var total = $Main/MissionManager.get_nombre_total_missions() # Devrait être 10
+	
+	if nb_reussites == total:
+		# On ferme la popup de résultat pour ne pas gêner
+		%PopupResultat.hide()
+		declencher_fin_de_jeu("Grand Maître ! Toutes les missions sont réussies !")
 
 func _sur_fermeture_popup_echec_critique():
 	print("🚨 3 échecs atteints ! Fin de journée forcée.")
@@ -315,7 +382,52 @@ func _sur_fermeture_popup_echec_critique():
 # ==========================================
 # FONCTIONS UTILITAIRES / VISUEL
 # ==========================================
-
+func afficher_fiche_personnage(perso):
+	# 1. Titre
+	%LabelNom.text = "Fiche de " + perso.nom_personnage
+	
+	# 2. Tri des traits (Bonus vs Malus)
+	var bonus_trouve = "Bonus : ???"
+	var malus_list = []
+	
+	# On récupère les définitions depuis le MissionManager
+	var db = $Main/MissionManager.database_traits
+	
+	for trait_nom in perso.traits:
+		var est_revele = (trait_nom in perso.traits_decouverts)
+		var texte_affiche = "???"
+		
+		# Si révélé, on affiche le vrai nom, sinon ???
+		if est_revele:
+			texte_affiche = trait_nom
+			# Optionnel : Ajouter la description de l'effet
+			# if db.has(trait_nom): texte_affiche += " (" + str(db[trait_nom]["val"]*100) + "%)"
+		
+		if db.has(trait_nom):
+			if db[trait_nom]["type"] == "bonus":
+				bonus_trouve = "Bonus : " + texte_affiche
+			else:
+				malus_list.append("Défaut : " + texte_affiche)
+	
+	# 3. Remplissage des Labels
+	%LabelBonus.text = bonus_trouve
+	%LabelBonus.modulate = Color.GREEN if "?" not in bonus_trouve else Color.WHITE
+	
+	if malus_list.size() > 0:
+		%LabelMalus1.text = malus_list[0]
+		%LabelMalus1.modulate = Color.ORANGE_RED if "?" not in malus_list[0] else Color.WHITE
+	else:
+		%LabelMalus1.text = "-"
+		
+	if malus_list.size() > 1:
+		%LabelMalus2.text = malus_list[1]
+		%LabelMalus2.modulate = Color.ORANGE_RED if "?" not in malus_list[1] else Color.WHITE
+	else:
+		%LabelMalus2.text = "-"
+		
+	# 4. Ouverture
+	%FichePersoPopup.popup_centered()
+	
 func _on_selection_demandee(le_perso):
 	if le_perso.est_occupe():
 		label_info.text = le_perso.nom_personnage + " est occupé (%dh)" % le_perso.temps_mission_restant
@@ -412,3 +524,57 @@ func _actualiser_affichage_chances():
 			participants.append(child.get_meta("perso"))
 	var proba = $Main/MissionManager.calculer_probabilite(mission_en_attente, participants)
 	%PopupMission.get_node("VBoxContainer/LabelChances").text = "Chances : %d%%" % (proba * 100)
+
+func declencher_fin_de_jeu(raison: String):
+	print("🏆 FIN DU JEU : " + raison)
+	
+	# Petit délai pour lire le message ou voir l'animation finale de la carte
+	await get_tree().create_timer(1.0).timeout
+	
+	# --- CHARGEMENT DE LA SCÈNE DE FIN ---
+	# Remplace le chemin ci-dessous par ton futur fichier .tscn
+	var chemin_scene_fin = "res://scenes/ui/fin_animation.tscn" 
+	
+	if ResourceLoader.exists(chemin_scene_fin):
+		get_tree().change_scene_to_file(chemin_scene_fin)
+	else:
+		print("⚠️ Scène de fin introuvable (" + chemin_scene_fin + "). Retour au menu.")
+		# Fallback vers le menu si la scène n'existe pas encore
+		get_tree().change_scene_to_file("res://scenes/menu.tscn")
+		
+func actualiser_liste_missions_hud():
+	# 1. On récupère le noeud de la liste (chemin basé sur ta scène)
+	# Si tu as activé le "Nom Unique" (%) sur cette liste dans l'éditeur, utilise %MissionList
+	# Sinon, voici le chemin complet probable :
+	var liste_hud = $Main/CanvasLayer/UI_mission/MissionPanel/MissionBox/MissionList
+	
+	if liste_hud == null:
+		print("⚠️ Impossible de trouver la MissionList du HUD")
+		return
+
+	liste_hud.clear()
+	
+	# 2. On parcourt toutes les missions
+	for m in $Main/MissionManager.missions:
+		var titre = m["title"]
+		var status = m["status"] # 0=Dispo, 1=En cours, 2=Réussie, 3=Ratée
+		
+		# On ajoute l'item
+		var idx = liste_hud.add_item(titre)
+		
+		# 3. Application des couleurs
+		if status == 2: # RÉUSSIE (Vert)
+			liste_hud.set_item_custom_bg_color(idx, Color(0.2, 0.8, 0.2, 0.5))
+			liste_hud.set_item_tooltip(idx, "Mission réussie !")
+			
+		elif status == 3: # RATÉE (Rouge)
+			liste_hud.set_item_custom_bg_color(idx, Color(0.8, 0.2, 0.2, 0.5))
+			liste_hud.set_item_tooltip(idx, "Mission échouée...")
+			
+		elif status == 1: # EN COURS (Jaune/Orange - Optionnel mais pratique)
+			liste_hud.set_item_custom_bg_color(idx, Color(0.8, 0.6, 0.0, 0.5))
+			liste_hud.set_item_text(idx, titre + " (En cours...)")
+			
+		else: # DISPONIBLE (Gris / Normal)
+			# Tu peux laisser transparent ou mettre un gris léger
+			pass
