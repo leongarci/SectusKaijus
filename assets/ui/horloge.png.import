@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bin3u8vj4oixf"
-path="res://.godot/imported/horloge.png-378e659a36fcf20a6180e20cd9156aa4.ctex"
+uid="uid://8yexjafpftdl"
+path="res://.godot/imported/Horloge.png-0699ef2671935cc57013de82d965e463.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/horloge.png"
-dest_files=["res://.godot/imported/horloge.png-378e659a36fcf20a6180e20cd9156aa4.ctex"]
+source_file="res://assets/ui/Horloge.png"
+dest_files=["res://.godot/imported/Horloge.png-0699ef2671935cc57013de82d965e463.ctex"]
 
 [params]
 

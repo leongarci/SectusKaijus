@@ -23,8 +23,9 @@ func _ready():
 		c.name = "ColorRect"
 		add_child(c)
 	$ColorRect.color = couleur_point
-	$ColorRect.size = Vector2(50, 50)
-	$ColorRect.position = Vector2(-25, -25)
+	var taille=15
+	$ColorRect.size = Vector2(taille,taille)
+	$ColorRect.position = Vector2(-taille/2, -taille/2)
 	
 	if has_node("Area2D"):
 		if not $Area2D.input_event.is_connected(_on_area_2d_input_event):

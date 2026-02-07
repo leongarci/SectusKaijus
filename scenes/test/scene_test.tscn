@@ -2,10 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://c6amc01xkkysk" path="res://scenes/characters/character.tscn" id="1_dplmw"]
 [ext_resource type="Script" uid="uid://dq7bnj1eg7kda" path="res://scripts/test/scene_test.gd" id="1_oqoec"]
+[ext_resource type="Texture2D" uid="uid://cy7tuqr1awd6u" path="res://assets/ui/background_table.png" id="2_eq5e6"]
 [ext_resource type="Texture2D" uid="uid://df6uh5yxychsn" path="res://assets/ui/cards/lilou.png" id="3_1k3ka"]
 [ext_resource type="Script" uid="uid://cqwdswv3adqsa" path="res://scripts/ui/ui_mission.gd" id="3_iq4jt"]
 [ext_resource type="Texture2D" uid="uid://dujibpi4td67q" path="res://assets/ui/cards/titouan.png" id="4_dabsh"]
 [ext_resource type="Script" uid="uid://ug4plqb2at08" path="res://scripts/managers/MissionManager.gd" id="4_pdn7u"]
+[ext_resource type="PackedScene" uid="uid://g7aq0te1te2i" path="res://scenes/ui/horloge_ui.tscn" id="4_wq44r"]
 [ext_resource type="Texture2D" uid="uid://blfo53s2sxkod" path="res://assets/ui/cards/julien.png" id="5_l0jpj"]
 [ext_resource type="Script" uid="uid://bl2k6uhicbjd3" path="res://scripts/managers/TimeManager.gd" id="5_t8n8j"]
 [ext_resource type="Texture2D" uid="uid://b7lux567d2t7k" path="res://assets/ui/cards/clovis.png" id="6_y0upk"]
@@ -22,15 +24,29 @@ font_color = Color(1, 1, 0, 1)
 script = ExtResource("1_oqoec")
 tile_map = NodePath("Main/TileMapLayer")
 
+[node name="Background" type="TextureRect" parent="." unique_id=273962390]
+z_index = -100
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -448.0
+offset_top = -305.0
+offset_right = 2368.0
+offset_bottom = 1231.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.8, 0.8)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("2_eq5e6")
+stretch_mode = 6
+
 [node name="Main" parent="." unique_id=851540061 instance=ExtResource("8_dabsh")]
 z_index = -1
 position = Vector2(468, 202)
 
 [node name="TileMapLayer" parent="Main" index="0" unique_id=1726121890]
-scale = Vector2(1, 1)
-
-[node name="Camera2D" parent="Main/TileMapLayer" index="0" unique_id=1822370931]
-zoom = Vector2(0.3, 0.3)
+scale = Vector2(0.3, 0.3)
 
 [node name="UI_mission" type="Control" parent="Main/CanvasLayer" parent_id_path=PackedInt32Array(851540061, 471304397) index="1" unique_id=1095418352]
 layout_mode = 3
@@ -67,6 +83,7 @@ size_flags_vertical = 3
 layout_mode = 2
 
 [node name="TimeLabel" type="Label" parent="Main/CanvasLayer/UI_mission" unique_id=436547756]
+visible = false
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
@@ -219,6 +236,19 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 
+[node name="HorlogeUI" parent="UI" unique_id=684516969 instance=ExtResource("4_wq44r")]
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 496.99997
+offset_top = 323.99997
+offset_right = 496.99997
+offset_bottom = 323.99997
+grow_horizontal = 1
+grow_vertical = 1
+
 [node name="PopupResultat" type="AcceptDialog" parent="." unique_id=2090242370]
 unique_name_in_owner = true
 
@@ -227,6 +257,8 @@ unique_name_in_owner = true
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=1060448407]
 stream = ExtResource("13_t8n8j")
 autoplay = true
+
+[node name="Ambiance" type="CanvasModulate" parent="." unique_id=83686252]
 
 [connection signal="pressed" from="UI/BoutonAvancer" to="." method="_on_bouton_avancer_pressed"]
 

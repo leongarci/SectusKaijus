@@ -15,6 +15,8 @@ var scene_bouton_monde = preload("res://scenes/ui/BoutonMission.tscn")
 @onready var label_info = $UI/MessageInfo
 @onready var deck_container = $UI/DeckContainer
 @onready var bouton_mission = %BoutonMission
+@onready var ambiance = $Ambiance 
+@onready var horloge_ui = $UI/HorlogeUI
 
 # --- VARIABLES DE JEU ---
 var personnage_selectionne = null
@@ -54,7 +56,10 @@ func _ready():
 		# On vérifie SI ce n'est PAS déjà connecté avant de le faire
 		if not btn_avancer.pressed.is_connected(_on_bouton_avancer_pressed):
 			btn_avancer.pressed.connect(_on_bouton_avancer_pressed)
-
+			
+	if has_node("UI/HorlogeUI"):
+		$UI/HorlogeUI.mettre_a_jour_temps(0, 1)
+		
 	bouton_mission.hide()
 	
 	# Configuration des Personnages
@@ -84,7 +89,7 @@ func _ready():
 			var nouvelle_carte = scene_carte.instantiate()
 			deck_container.add_child(nouvelle_carte)
 			nouvelle_carte.setup(p)
-			nouvelle_carte.carte_cliquee.connect(_on_selection_demandee)
+			nouvelle_carte.carte_cliquee.connect(_on_gestion_clic_carte)
 			
 			if not nouvelle_carte.has_user_signal("demande_fiche"):
 				nouvelle_carte.add_user_signal("demande_fiche")
@@ -99,10 +104,40 @@ func _ready():
 	for p in personnages:
 		reorganiser_positions_sur_case(p.coord_actuelle)
 	actualiser_boutons_monde()
-
+	mettre_a_jour_ambiance()
 # ==========================================
 # LOGIQUE DU TEMPS ET TRANSITION
 # ==========================================
+
+func _on_gestion_clic_carte(perso_choisi):
+	# --- LOGIQUE DE BASCULE (TOGGLE) ---
+	
+	if personnage_selectionne == perso_choisi:
+		# CAS 1 : C'est déjà lui ! -> On DÉSÉLECTIONNE tout.
+		personnage_selectionne = null
+		print("Désélection (Clic sur le même perso)")
+	else:
+		# CAS 2 : C'est un nouveau ! -> On le SÉLECTIONNE.
+		personnage_selectionne = perso_choisi
+		print("Nouvelle sélection : ", perso_choisi.nom_personnage)
+	
+	# --- MISE À JOUR VISUELLE ---
+	
+	for carte in deck_container.get_children():
+		if carte.has_method("set_selection"):
+			# Si aucun perso n'est sélectionné (null), tout le monde s'éteint
+			if personnage_selectionne == null:
+				carte.set_selection(false)
+			
+			# Sinon, seul le bon s'allume
+			elif carte.perso_reference == personnage_selectionne:
+				carte.set_selection(true)
+			else:
+				carte.set_selection(false)
+				
+	# --- MISE À JOUR DU MONDE (Mission buttons) ---
+	# (Important : ta fonction actualiser_boutons_monde doit gérer le cas où personnage_selectionne est null)
+	actualiser_boutons_monde()
 
 func trouver_la_base():
 	for cell in tile_map.get_used_cells():
@@ -135,13 +170,14 @@ func demarrer_nouvelle_journee():
 func _on_bouton_avancer_pressed():
 	var ancien_jour = $Main/TimeManager.day
 	$Main/TimeManager.advance_hour()
+	mettre_a_jour_ambiance()
 	heure_actuelle = $Main/TimeManager.hour
 	var nouveau_jour = $Main/TimeManager.day
 	
 	if nouveau_jour > ancien_jour:
 		var nb_reussites = $Main/MissionManager.get_nombre_missions_reussies()
 		
-		if nb_reussites >= 8:
+		if nb_reussites >= 1:
 			declencher_fin_de_jeu("Le soleil se lève sur une victoire... " + str(nb_reussites) + " missions réussies !")
 			return # On arrête tout, on ne lance pas la transition jour
 		declencher_transition_nouveau_jour(ancien_jour, nouveau_jour)
@@ -162,6 +198,7 @@ func _on_bouton_avancer_pressed():
 		update_visuel_carte(perso, false)
 	
 	await get_tree().create_timer(0.35).timeout
+	$UI/HorlogeUI.mettre_a_jour_temps(heure_actuelle, nouveau_jour)
 	actualiser_boutons_monde()
 	reorganiser_toutes_les_cases()
 
@@ -226,6 +263,8 @@ func declencher_transition_nouveau_jour(jour_depart: int, jour_arrivee: int):
 		$UI.add_child(transition)
 
 func forcer_passage_jour_suivant():
+	
+	
 	var overlay_instance = null
 	if transition_overlay:
 		overlay_instance = transition_overlay.instantiate()
@@ -240,6 +279,7 @@ func forcer_passage_jour_suivant():
 		await echec_instance.fin_dialogue
 	
 	var jour_avant = $Main/TimeManager.day
+	$UI/HorlogeUI.mettre_a_jour_temps(0, jour_avant+1)
 	while $Main/TimeManager.day == jour_avant:
 		$Main/TimeManager.advance_hour()
 	
@@ -351,7 +391,7 @@ func terminer_et_afficher_mission(perso):
 	if not res.success: nb_echecs_jour += 1
 	
 	%PopupResultat.dialog_text = res.msg
-	if nb_echecs_jour >= 3:
+	if nb_echecs_jour >= 1:
 		%PopupResultat.confirmed.connect(_sur_fermeture_popup_echec_critique, CONNECT_ONE_SHOT)
 	%PopupResultat.popup_centered()
 	
@@ -380,7 +420,7 @@ func reorganiser_positions_sur_case(case_grille: Vector2i):
 		if persos_ici.size() == 1:
 			create_tween().tween_property(persos_ici[0], "global_position", centre_hex, 0.2)
 		return
-	var rayon = 25.0
+	var rayon = 10.0
 	for i in range(persos_ici.size()):
 		var angle = (i * 2 * PI / persos_ici.size()) - PI/2
 		var offset = Vector2(cos(angle), sin(angle)) * rayon
@@ -394,7 +434,7 @@ func _draw():
 			draw_polyline(chemin_visuel_actuel, Color(1, 1, 1, 0.8), 3.0)
 
 func dessiner_hexagone(centre: Vector2, couleur: Color):
-	var rayon = tile_map.tile_set.tile_size.y * 0.48
+	var rayon = tile_map.tile_set.tile_size.y * 0.15
 	var points = PackedVector2Array()
 	for i in range(6):
 		var a = deg_to_rad(60 * i - 30)
@@ -524,3 +564,25 @@ func afficher_fiche_personnage(perso):
 		
 	# 5. Ouverture de la fenêtre
 	%FichePersoPopup.popup_centered()
+
+func mettre_a_jour_ambiance():
+	var couleur_cible = Color.WHITE
+	
+	# --- DÉFINITION DES AMBIANCES ---
+	if heure_actuelle >= 6 and heure_actuelle < 18:
+		# JOUR (06h-18h) : Lumière blanche normale
+		couleur_cible = Color.WHITE
+		
+	elif heure_actuelle >= 18 and heure_actuelle < 21:
+		# CRÉPUSCULE (18h-21h) : Teinte Orangée/Rose
+		couleur_cible = Color(0.95, 0.75, 0.70) 
+		
+	else:
+		# NUIT (21h-06h) : Teinte Bleu Nuit / Violette
+		# On garde un peu de luminosité (0.4) pour qu'on voie encore la carte
+		couleur_cible = Color(0.4, 0.4, 0.65) 
+
+	# --- ANIMATION FLUIDE ---
+	# On change la couleur doucement sur 1 seconde
+	var tween = create_tween()
+	tween.tween_property(ambiance, "color", couleur_cible, 1.0)
